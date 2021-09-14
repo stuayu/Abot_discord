@@ -1,0 +1,14 @@
+version: '3.8'
+
+services: 
+  discord:
+    container_name: discord_bot
+    restart: always
+
+    build: 
+      context: .
+      dockerfile: ./Dockerfile
+
+    volumes: 
+      - ./music:/tmp/discordbot/
+      - ./src:/app/
