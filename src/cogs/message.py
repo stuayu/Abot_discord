@@ -19,8 +19,9 @@ class Message(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
+        #channel = self.bot.get_channel('879005759336251412')
         # 自分からのメッセージには返信しないように
-        if message.author.bot:
+        if message.author.bot or str(message.author.name) == 'BotCallerBot':
             return
         else:
             # 添付ファイルの属性を処理
@@ -36,6 +37,8 @@ class Message(commands.Cog):
             #      str(message.author.id)+"\n"+str(message.content))
             logger.debug(str(message.author.name)+"\n" +
                   str(message.author.id)+"\n"+str(message.content))
+            # これがないとbot.commandは動かないみたい
+            # await self.bot.process_commands(message)
 
     # 送ったコマンドを表示するだけ (クラスはselfが必須なため注意)
     @commands.command()

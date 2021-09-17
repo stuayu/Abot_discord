@@ -1,6 +1,8 @@
+import random
 from discord.ext import commands  # Bot Commands Frameworkのインポート
 import discord
 from multiprocessing import Pool,Process
+import playlist.a_loop as m_list
 import modules.y_dl as y_dl
 import os
 import shutil
@@ -52,23 +54,82 @@ class Voice(commands.Cog):
         await voice_client.disconnect()
         await ctx.send("ボイスチャンネルから切断しました。")
 
-    @commands.command()
-    async def v_music(self, ctx, arg):
-        """youtube-dlに対応したサイトから音楽を再生 引数:URL"""
+    @commands.group()
+    async def v_music(self, ctx):
+        """youtube-dlに対応したサイトから音楽を再生 v_music URL"""
+        logger.debug(ctx.invoked_subcommand)
+
+        if ctx.invoked_subcommand is None:
+            url = str(ctx.message.content).split()[1]
+            if not url or 'https://' not in url:
+                await ctx.send_help('v_music')
+                return
+            # youtubeから音源再生
+            voice_client = ctx.message.guild.voice_client
+            
+            data = y_dl.dl_music(url)
+
+            if type(data) is str:
+                await ctx.send('`'+data+'`')
+                return
+            m_file = SAVE_DIR+data['id']+'.webm'
+            print(m_file)
+            tmp = SAVE_DIR+data['id']+'--tmp.webm'
+            while os.path.isfile(tmp):
+                await asyncio.sleep(1)
+            await ctx.send('`'+data['title']+'`')
+            source = await discord.FFmpegOpusAudio.from_probe(m_file)
+            # すでに再生している場合は割り込み許可
+            if voice_client.is_playing():
+                voice_client.stop()
+            voice_client.play(source)
+            return
+
+    @v_music.command()
+    async def a_loop(self,ctx):
+        """プレイリスト(a_loop)をランダムに再生する v_music 0 a_loop"""
+        logger.debug('subcommand a_loop start ...')
         # youtubeから音源再生
         voice_client = ctx.message.guild.voice_client
-        
-        data = y_dl.dl_music(arg)
-
-        m_file = SAVE_DIR+data['id']+'.webm'
-        print(m_file)
-        await ctx.send('`'+data['title']+'`')
-        source = await discord.FFmpegOpusAudio.from_probe(m_file)
         # すでに再生している場合は割り込み許可
         if voice_client.is_playing():
-            voice_client.stop()
-
-        voice_client.play(source)
+            await ctx.send('`,v_stopコマンドを実行の上再度お試しください`')
+            return -1
+        # 初期化
+        next_m = ''
+        while True:
+            if voice_client.is_playing() or voice_client.is_paused():
+                #await ctx.send('`曲は再生中です`')
+                await asyncio.sleep(1)
+                #print('曲は再生中です')
+            elif not voice_client.is_playing():
+                if self.__stop:
+                    self.__stop = False
+                    next_m = ''
+                    # 動画ファイルを削除
+                    shutil.rmtree(SAVE_DIR)
+                    os.mkdir(SAVE_DIR)
+                    break
+                if next_m == '':
+                    logger.debug('最初の曲データをロード中')
+                    next_m = m_list.mylist[random.randint(0,len(m_list.mylist)-1)]
+                    logger.debug('ロード成功:'+next_m)
+                data = y_dl.dl_music(next_m)
+                if type(data) is str:
+                    await ctx.send('`'+data+'`')
+                    return
+                m_file = SAVE_DIR+data['id']+'.webm'
+                tmp = SAVE_DIR+data['id']+'--tmp.webm'
+                logger.debug(m_file)
+                while os.path.isfile(tmp):
+                    await asyncio.sleep(1)
+                await ctx.send('`'+data['title']+'`')
+                source = await discord.FFmpegOpusAudio.from_probe(m_file)
+                voice_client.play(source)
+                # 次の楽曲準備
+                next_m = m_list.mylist[random.randint(0,len(m_list.mylist)-1)]
+                p = Process(target=y_dl.dl_music, args=(next_m,))
+                p.start()        
 
     @commands.command()
     async def v_stop(self, ctx):
@@ -85,8 +146,9 @@ class Voice(commands.Cog):
     @commands.command()
     async def v_skip(self, ctx, arg = '1'):
         """音楽をスキップ 引数:int 件数 (defalt: 1)"""
-        if self.__url.empty():
-            await ctx.send('キューに何もありません')
+        await ctx.message.delete()
+        #if self.__url.empty():
+        #    await ctx.send('キューに何もありません')
         voice_client = ctx.message.guild.voice_client
         if int(arg) == 1:
             pass
@@ -98,11 +160,12 @@ class Voice(commands.Cog):
                 self.__title.get()
 
         voice_client.stop()
-        await ctx.send('skip!')
+        #await ctx.send('skip!')
 
     @commands.command()
     async def v_pause(self, ctx):
         """音楽の再生をポーズする"""
+        await ctx.message.delete()
         voice_client = ctx.message.guild.voice_client
         voice_client.pause()
         await ctx.send('pause!\n再開時はv_restartを')
@@ -110,13 +173,15 @@ class Voice(commands.Cog):
     @commands.command()
     async def v_restart(self, ctx):
         """ポーズした楽曲を再生する"""
+        await ctx.message.delete()
         voice_client = ctx.message.guild.voice_client
         voice_client.resume()
-        await ctx.send('restart!')
+        #await ctx.send('restart!')
 
     @commands.command()
     async def rm_tmp(self, ctx):
         """手動でキャッシュを削除"""
+        await ctx.message.delete()
         voice_client = ctx.message.guild.voice_client
         if voice_client.is_playing():
             voice_client.stop()
@@ -131,6 +196,9 @@ class Voice(commands.Cog):
             #再生リストに追加
             if 'youtu' in data and 'list' in data:
                 p_json = y_dl.playlist(data)
+                if type(p_json) is str:
+                    await ctx.send('`'+p_json+'`')
+                    return
                 for i in range(len(p_json['entries'])):
                     y_url = 'https://youtu.be/' + p_json['entries'][i]['url']
                     y_title = p_json['entries'][i]['title']
@@ -141,19 +209,26 @@ class Voice(commands.Cog):
                 with self.__url.mutex:
                     p = Process(target=y_dl.dl_music, args=(self.__url.queue[0],))
                     p.start()
+                    #asyncio.create_task(y_dl.dl_music(self.__url.queue[0]))
+                
             else:
                 meta = y_dl.playlist(data)
+                if type(meta) is str:
+                    await ctx.send('`'+meta+'`')
+                    return
                 self.__title.put(meta['title'])
                 self.__url.put(data)
                 await ctx.send('追加しました\n現在キューに'+str(self.__url.qsize())+'件あります。')
                 with self.__url.mutex:
                     p = Process(target=y_dl.dl_music, args=(self.__url.queue[0],))
                     p.start()
+                    #asyncio.create_task(y_dl.dl_music(self.__url.queue[0]))
         
 
     @commands.command()
     async def v_qplay(self, ctx):
         """キューにある楽曲を再生"""
+        await ctx.message.delete()
         # youtubeから音源再生
         voice_client = ctx.message.guild.voice_client
         # すでに再生している場合は割り込み許可
@@ -179,12 +254,24 @@ class Voice(commands.Cog):
                         with self.__url.mutex:
                             p = Process(target=y_dl.dl_music, args=(self.__url.queue[0],))
                             p.start()
+                            #asyncio.create_task(
+                            #    y_dl.dl_music(self.__url.queue[0]))
                     break
                 data = y_dl.dl_music(self.__url.get())
-
+                if type(data) is str:
+                    await ctx.send('`'+data+'`')
+                    return
+                #m_file = SAVE_DIR+data['id']+'tmp.webm'
                 m_file = SAVE_DIR+data['id']+'.webm'
-                
+                #result1 = os.path.isfile(m_file)
+                #result2 = os.path.getsize(m_file)
+                #await ctx.send('`ファイルの存在確認:'+str(result1)+'\nファイルサイズ確認:'+str(result2)+'`')
+                #while os.path.isfile(m_file) == False:
+                #    await asyncio.sleep(1)
                 logger.debug(m_file)
+                tmp = SAVE_DIR+data['id']+'--tmp.webm'
+                while os.path.isfile(tmp):
+                    await asyncio.sleep(1)
                 await ctx.send('`'+self.__title.get()+'`')
                 source = await discord.FFmpegOpusAudio.from_probe(m_file)
                 voice_client.play(source)
@@ -192,26 +279,33 @@ class Voice(commands.Cog):
                     with self.__url.mutex:
                         p = Process(target=y_dl.dl_music, args=(self.__url.queue[0],))
                         p.start()
+                        #asyncio.create_task(y_dl.dl_music(self.__url.queue[0]))
 
     @commands.command()
     async def v_qck(self, ctx):
         """キューにある楽曲とURLを10件まで表示する。"""
+        await ctx.message.delete()
         l_data = ''
         with self.__url.mutex:
             with self.__title.mutex:
                 for i in range(len(self.__url.queue)):
                     if i <= 9:
+                        #logger.debug(str(i + 1))
+                        #logger.debug(self.__title.queue[i])
+                        #logger.debug(self.__url.queue[i])
+                        #logger.debug('--------------')
                         l_data += str(i+1) + '|' + self.__title.queue[i] + ' | ' + '  ' + self.__url.queue[i] + '\n'
                     
                 
         l_data += '\n10件以上は省略されます。'
+        #logger.debug(self.__url.queue)
         
         await ctx.send('```現在キューに' + str(self.__url.qsize()) + '件あります。\n'+l_data+'```')
         
     @commands.command()
     async def v_qcr(self, ctx):
         """キューを空にする"""
-
+        await ctx.message.delete()
         # キューからデータがなくなるまで取り出しを行う
         while not self.__url.empty():
             self.__title.get()

@@ -1,4 +1,8 @@
 from __future__ import unicode_literals
+import random
+import subprocess
+import os
+from multiprocessing import Process
 import youtube_dl
 import json
 import subprocess as sp
@@ -13,6 +17,9 @@ logger.setLevel(DEBUG)
 logger.addHandler(handler)
 logger.propagate = False
 
+proxy_ip_list = ['socks4://XXXXXXXXXXXXXXX/','https://XXXXXXXXXXXXXXXX/']
+
+proxy_ip = proxy_ip_list[0]
 
 class MyLogger(object):
     def debug(self, msg):
@@ -33,28 +40,30 @@ def my_hook(d):
 ydl_opts1 = {
     'format': 'bestaudio[acodec=opus]/bestaudio/best -x',
     'logger': MyLogger(),
-    #'cookiefile': '/app/cookies.txt',
-    #'proxy': 'XXXXXXXXXXXXXXXXXXXXXXXXX',
+    'cookiefile': '/app/cookies.txt',
+    'proxy': proxy_ip,
     'verbose': 'True',
     'logger': logger,
     'source_address': '0.0.0.0',
     'noplaylist': 'True',
-    'socket_timeout': 30,
+    'socket_timeout': 15,
+    'retries': 0,
     'progress_hooks': [my_hook],
-    'outtmpl': SAVE_DIR+'%(id)s.webm',
+    'outtmpl': SAVE_DIR+'%(id)s--tmp.webm',
 }
 
 ydl_opts2 = {
     'format': 'bestaudio[acodec=opus]/bestaudio/best -x',
     'logger': MyLogger(),
-    #'cookiefile': '/app/cookies.txt',
+    'cookiefile': '/app/cookies.txt',
+    'retries': 0,
     'noplaylist': 'True',
     'verbose': 'True',
     'logger': logger,
     'source_address': '0.0.0.0',
-    'socket_timeout': '30',
+    'socket_timeout': 15,
     'progress_hooks': [my_hook],
-    'outtmpl': SAVE_DIR+'%(id)s.webm',
+    'outtmpl': SAVE_DIR+'%(id)s--tmp.webm',
 }
 
 ydl_opts3 = {
@@ -64,48 +73,49 @@ ydl_opts3 = {
     'logger': logger,
     'noplaylist': 'True',
     'source_address': '0.0.0.0',
-    'socket_timeout': '30',
+    'socket_timeout': 30,
     'progress_hooks': [my_hook],
-    'outtmpl': SAVE_DIR+'%(id)s.webm',
+    'outtmpl': SAVE_DIR+'%(id)s--tmp.webm',
 }
 
 playlist_opt1 = {
     'extract_flat': 'in_playlist',
+    'socket_timeout': 5,
+    'retries': 0,
+    'cookiefile': '/app/cookies.txt',
+    'socket_timeout': 15,
     'dumpjson': 'True',
 }
 
 playlist_opt2 = {
     'extract_flat': 'in_playlist',
     'dumpjson': 'True',
-    #'cookiefile': '/app/cookies.txt',
-    'proxy': 'XXXXXXXXXXXXXXXXXXXXXX',
+    'cookiefile': '/app/cookies.txt',
+    'proxy': proxy_ip,
+    'retries': 0,
+    'socket_timeout': 30,
 }
 
 
-def dl_music(url):
+def dl_music(url:str):
     if 'youtu' in url:
+        opt1 = os.path.isfile(SAVE_DIR+url.replace('https://www.youtube.com/watch?v=','')+'.webm')
+        opt2 = os.path.isfile(SAVE_DIR+url.replace('https://youtu.be/','')+'.webm')
         logger.debug('youtube login')
         try:
             with youtube_dl.YoutubeDL(ydl_opts2) as ydl:
-                meta = ydl.extract_info(url, download=True)
+                if opt1 or opt2:
+                    meta = ydl.extract_info(url, download=False)
+                else:
+                    meta = ydl.extract_info(url, download=True)
+                input = SAVE_DIR+meta['id']+'--tmp.webm'
+                output = SAVE_DIR+meta['id']+'.webm'
+                p = Process(target=ffmpeg_norm, args=(input,output,))
+                p.start()
                 return meta
-        except youtube_dl.utils.DownloadError:
-            pass 
         except Exception as e:
-            logger.debug(e.args)
-            return -1
-
-        try:
-            logger.debug('proxy youtube')
-            with youtube_dl.YoutubeDL(ydl_opts1) as ydl:
-                meta = ydl.extract_info(url, download=True)
-                return meta
-        except youtube_dl.DownloadError:
-            pass
-        except Exception as e:
-            logger.debug(e.args)
-            return -1
-
+            logger.debug(e.args[0])
+            return e.args[0]
     else:
         with youtube_dl.YoutubeDL(ydl_opts3) as ydl:
             meta = ydl.extract_info(url, download=True)
@@ -117,24 +127,25 @@ def playlist(url):
             info_dict = ydl.extract_info(url, download=False)
             o = json.loads(json.dumps(info_dict, ensure_ascii=False))
         return o
-    except youtube_dl.utils.DownloadError:
-            pass 
     except Exception as e:
-        logger.debug(e.args)
-        return -1
+        logger.debug(e.args[0])
+        return e.args[0]
+        pass
 
-    try:
-        with youtube_dl.YoutubeDL(playlist_opt2) as ydl:
-            info_dict = ydl.extract_info(url, download=False)
-            o = json.loads(json.dumps(info_dict, ensure_ascii=False))
-        return o
-    except Exception as e:
-        logger.debug(e.args)
-        return -1
+def ffmpeg_norm(source:str,output:str):
+    """ffmpegを利用したノーマライズ"""
+    cmd = 'ffmpeg -i ' + source +' -af dynaudnorm '+ output
+    proc = subprocess.run(cmd,stdout = subprocess.PIPE, stderr = subprocess.PIPE,shell=True)
+    # 入力ファイル削除
+    os.remove(source)
+    logger.debug(proc.stdout.decode("utf8"))
+    logger.debug(proc.stderr.decode("utf8"))
 
-
+    return 0
 
 if __name__ == '__main__':
+    #meta = dl_music('https://www.youtube.com/watch?v=hH5d3riIHN4')
+    #print(meta)
     l_1 = 'https://www.youtube.com/watch?v=--41OGPMurU&list=RD--41OGPMurU&start_radio=1'
     music = 'https://www.youtube.com/watch?v=3a7KuNsrwog'
     meta = playlist(music)

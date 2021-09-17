@@ -5,7 +5,11 @@ WORKDIR /app
 RUN apt-get update
 RUN apt-get install -y \
     wget \
-    xz-utils
+    xz-utils \
+    locales
+RUN echo "ja_JP UTF-8" > /etc/locale.gen && \
+    locale-gen
+
 ENV TZ='Asia/Tokyo'
 RUN wget https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2021-09-09-12-23/ffmpeg-n4.4-150-gb5cdf08cae-linux64-gpl-4.4.tar.xz && \
     tar Jxvf ./ffmpeg-n4.4-150-gb5cdf08cae-linux64-gpl-4.4.tar.xz && \

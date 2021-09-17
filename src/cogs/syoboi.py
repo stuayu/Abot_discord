@@ -31,7 +31,7 @@ class Syoboi(commands.Cog):
         for (title,a_list) in data:
             embed.add_field(name=title,value=a_list, inline=False)
 
-        await ctx.send(embed=embed)        
+        await ctx.send(embed=embed)
 
 
 # Bot本体側からコグを読み込む際に呼び出される関数。
