@@ -31,11 +31,10 @@ class News(commands.Cog):
     @commands.command()
     async def ynews(self, ctx):
         """Yahooから記事を表示する"""
+        await ctx.message.delete()
         await ctx.send("今日のYahooニュースです．")
         # Yahooトップのトピック記事タイトルを取得
         news_data = get_news.get_yahoo_news()
-        # 取得データの表示
-        #news_data = news_data[:-2]
         top_news = ""
         for news in (news_data):
             top_news += '・'+news[0]+'\n'+'--<'+news[1] + '>--' + '\n'
@@ -45,9 +44,9 @@ class News(commands.Cog):
     @commands.command()
     async def nnews(self, ctx):
         """NHKニュースを表示する"""
+        await ctx.message.delete()
         embed = discord.Embed(title="今日のNHKニュースです．",
                               color=discord.Colour.red())
-        # await ctx.send("今日のNHKニュースです．")
         # NHKトップのトピック記事を取得
         text_data, news_data = get_news.get_nhk_news()
         # テキストデータのみの時

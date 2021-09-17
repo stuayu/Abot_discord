@@ -56,28 +56,6 @@ def get_yahoo_news():
         topic = data.span.string
         ynews_url = get_shortenURL.get_shortenURL(data.attrs["href"])
         news_data.append([topic,ynews_url])
-        """
-        ynews_text = "----\n"+topic+"\n" + \
-            get_shortenURL.get_shortenURL(ynews_url)
-        news_data.append(ynews_text)
-        """
-    #topicsindex = soup.find('section', attrs={'id': 'tabpanelTopics1'})
-    # class「topicsindex」内から記事タイトルを抽出
-    """
-    li = topicsindex.find_all('article')
-    for i in range(8):
-        a = li[i].find('a')
-        b = li[i].find('span')
-        # 記事タイトルとURLを保存
-        url2 = a.get('href')
-        req2 = urllib.request.Request(url2, headers={'User-Agent': ua})
-        html2 = urllib.request.urlopen(req2)
-        soup2 = BeautifulSoup(html2, "html.parser")
-        topicsindex2 = soup2.find(class_='pickupMain_articleSummary')
-        re_url = '--<'+get_shortenURL.get_shortenURL(a.get('href'))+'>--'
-
-        news_data.append([b.contents[0], topicsindex2.contents[0], re_url])
-    """
     return news_data
 
 
@@ -98,17 +76,6 @@ def get_nhk_news():
     html = urllib.request.urlopen(req)
     # htmlパース
     soup = BeautifulSoup(html, "html.parser")
-    # 標準型NHKnewsのURLを取得したいときはこっち
-    """
-    #標準型NHKnewsへの変換
-    news_path = 'https://www3.nhk.or.jp/news/html/'
-    all_a = soup.find_all('a')
-    all_a = all_a[:7]
-    for index in (all_a):
-        n_url = news_path+index.get('href')
-        news_data.append([index.contents[0], n_url])
-    """
-    # 軽く中身だけを表示したいときはこっち
     # 簡易型NHKnewsへの変換
     text_data = []
     long_path = 'https://www3.nhk.or.jp/news/html/'
@@ -136,7 +103,6 @@ def get_nhk_news():
                 date_text = split_text[target+2] +\
                     '\n'+get_shortenURL.get_shortenURL(data[2])
         text_data.append([title_text, main_text, date_text, "-----"])
-        # time.sleep(1)
         print("*")
     print("-----")
     return text_data, news_data

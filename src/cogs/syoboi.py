@@ -32,8 +32,7 @@ class Syoboi(commands.Cog):
             embed.add_field(name=title,value=a_list, inline=False)
 
         await ctx.send(embed=embed)
-
-
+        
 # Bot本体側からコグを読み込む際に呼び出される関数。
 def setup(bot):
     bot.add_cog(Syoboi(bot))  # TestCogにBotを渡してインスタンス化し、Botにコグとして登録する。

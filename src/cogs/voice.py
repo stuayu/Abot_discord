@@ -31,6 +31,7 @@ class Voice(commands.Cog):
     @commands.command()
     async def v_connect(self,ctx):
         """Abotをボイスチャットに入室"""
+        await ctx.message.delete()
         # Botをボイスチャンネルに入室させます。
         voice_state = ctx.author.voice
         if (not voice_state) or (not voice_state.channel):
@@ -44,6 +45,7 @@ class Voice(commands.Cog):
     @commands.command()
     async def v_d(self,ctx):
         """Abotをボイスチャットから切断する"""
+        await ctx.message.delete()
         # Botをボイスチャンネルから切断します。
         voice_client = ctx.message.guild.voice_client
 
@@ -52,7 +54,7 @@ class Voice(commands.Cog):
             return
 
         await voice_client.disconnect()
-        await ctx.send("ボイスチャンネルから切断しました。")
+        #await ctx.send("ボイスチャンネルから切断しました。")
 
     @commands.group()
     async def v_music(self, ctx):
@@ -87,7 +89,8 @@ class Voice(commands.Cog):
 
     @v_music.command()
     async def a_loop(self,ctx):
-        """プレイリスト(a_loop)をランダムに再生する v_music 0 a_loop"""
+        """プレイリスト(a_loop)をランダムに再生する v_music a_loop"""
+        await ctx.message.delete()
         logger.debug('subcommand a_loop start ...')
         # youtubeから音源再生
         voice_client = ctx.message.guild.voice_client
@@ -99,9 +102,7 @@ class Voice(commands.Cog):
         next_m = ''
         while True:
             if voice_client.is_playing() or voice_client.is_paused():
-                #await ctx.send('`曲は再生中です`')
                 await asyncio.sleep(1)
-                #print('曲は再生中です')
             elif not voice_client.is_playing():
                 if self.__stop:
                     self.__stop = False
@@ -134,6 +135,7 @@ class Voice(commands.Cog):
     @commands.command()
     async def v_stop(self, ctx):
         """音楽の再生を停止 (v0.0.6:停止時キャッシュ削除追加)"""
+        await ctx.message.delete()
         voice_client = ctx.message.guild.voice_client
         if not voice_client.is_playing():
             await ctx.send('再生されていません')
@@ -141,7 +143,7 @@ class Voice(commands.Cog):
         self.__stop = True
         shutil.rmtree(SAVE_DIR)
         os.mkdir(SAVE_DIR)
-        await ctx.send('stop!')
+        #await ctx.send('stop!')
 
     @commands.command()
     async def v_skip(self, ctx, arg = '1'):
@@ -209,7 +211,6 @@ class Voice(commands.Cog):
                 with self.__url.mutex:
                     p = Process(target=y_dl.dl_music, args=(self.__url.queue[0],))
                     p.start()
-                    #asyncio.create_task(y_dl.dl_music(self.__url.queue[0]))
                 
             else:
                 meta = y_dl.playlist(data)
@@ -222,7 +223,6 @@ class Voice(commands.Cog):
                 with self.__url.mutex:
                     p = Process(target=y_dl.dl_music, args=(self.__url.queue[0],))
                     p.start()
-                    #asyncio.create_task(y_dl.dl_music(self.__url.queue[0]))
         
 
     @commands.command()
@@ -241,9 +241,7 @@ class Voice(commands.Cog):
 
         while not self.__url.empty() or voice_client.is_playing() or voice_client.is_paused():
             if voice_client.is_playing() or voice_client.is_paused():
-                #await ctx.send('`曲は再生中です`')
                 await asyncio.sleep(1)
-                #print('曲は再生中です')
             elif not voice_client.is_playing():
                 if self.__stop:
                     self.__stop = False
@@ -254,20 +252,12 @@ class Voice(commands.Cog):
                         with self.__url.mutex:
                             p = Process(target=y_dl.dl_music, args=(self.__url.queue[0],))
                             p.start()
-                            #asyncio.create_task(
-                            #    y_dl.dl_music(self.__url.queue[0]))
                     break
                 data = y_dl.dl_music(self.__url.get())
                 if type(data) is str:
                     await ctx.send('`'+data+'`')
                     return
-                #m_file = SAVE_DIR+data['id']+'tmp.webm'
                 m_file = SAVE_DIR+data['id']+'.webm'
-                #result1 = os.path.isfile(m_file)
-                #result2 = os.path.getsize(m_file)
-                #await ctx.send('`ファイルの存在確認:'+str(result1)+'\nファイルサイズ確認:'+str(result2)+'`')
-                #while os.path.isfile(m_file) == False:
-                #    await asyncio.sleep(1)
                 logger.debug(m_file)
                 tmp = SAVE_DIR+data['id']+'--tmp.webm'
                 while os.path.isfile(tmp):
@@ -279,7 +269,6 @@ class Voice(commands.Cog):
                     with self.__url.mutex:
                         p = Process(target=y_dl.dl_music, args=(self.__url.queue[0],))
                         p.start()
-                        #asyncio.create_task(y_dl.dl_music(self.__url.queue[0]))
 
     @commands.command()
     async def v_qck(self, ctx):
@@ -290,15 +279,10 @@ class Voice(commands.Cog):
             with self.__title.mutex:
                 for i in range(len(self.__url.queue)):
                     if i <= 9:
-                        #logger.debug(str(i + 1))
-                        #logger.debug(self.__title.queue[i])
-                        #logger.debug(self.__url.queue[i])
-                        #logger.debug('--------------')
                         l_data += str(i+1) + '|' + self.__title.queue[i] + ' | ' + '  ' + self.__url.queue[i] + '\n'
                     
                 
         l_data += '\n10件以上は省略されます。'
-        #logger.debug(self.__url.queue)
         
         await ctx.send('```現在キューに' + str(self.__url.qsize()) + '件あります。\n'+l_data+'```')
         
@@ -306,7 +290,6 @@ class Voice(commands.Cog):
     async def v_qcr(self, ctx):
         """キューを空にする"""
         await ctx.message.delete()
-        # キューからデータがなくなるまで取り出しを行う
         while not self.__url.empty():
             self.__title.get()
             self.__url.get()

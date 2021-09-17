@@ -68,4 +68,3 @@ if __name__ == '__main__':
     # command_prefixはコマンドの最初の文字として使うもの。
     bot = MyBot(command_prefix=prefix,help_command=JapaneseHelpCommand())
     bot.run(TOKEN)  # Botのトークン
-
