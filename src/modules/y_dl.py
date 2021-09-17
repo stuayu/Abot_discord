@@ -17,7 +17,7 @@ logger.setLevel(DEBUG)
 logger.addHandler(handler)
 logger.propagate = False
 
-proxy_ip_list = []
+proxy_ip_list = ['']
 
 proxy_ip = proxy_ip_list[0]
 
