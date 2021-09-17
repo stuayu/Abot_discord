@@ -31,9 +31,9 @@ class Voice(commands.Cog):
     @commands.command()
     async def v_connect(self,ctx):
         """Abotをボイスチャットに入室"""
-        await ctx.message.delete()
         # Botをボイスチャンネルに入室させます。
         voice_state = ctx.author.voice
+        await ctx.message.delete()
         if (not voice_state) or (not voice_state.channel):
             #もし送信者がどこのチャンネルにも入っていないなら
             await ctx.send("先にボイスチャンネルに入っている必要があります。")
@@ -45,10 +45,9 @@ class Voice(commands.Cog):
     @commands.command()
     async def v_d(self,ctx):
         """Abotをボイスチャットから切断する"""
-        await ctx.message.delete()
         # Botをボイスチャンネルから切断します。
         voice_client = ctx.message.guild.voice_client
-
+        await ctx.message.delete()
         if not voice_client:
             await ctx.send("Botはこのサーバーのボイスチャンネルに参加していません。")
             return
@@ -90,10 +89,10 @@ class Voice(commands.Cog):
     @v_music.command()
     async def a_loop(self,ctx):
         """プレイリスト(a_loop)をランダムに再生する v_music a_loop"""
-        await ctx.message.delete()
         logger.debug('subcommand a_loop start ...')
         # youtubeから音源再生
         voice_client = ctx.message.guild.voice_client
+        await ctx.message.delete()
         # すでに再生している場合は割り込み許可
         if voice_client.is_playing():
             await ctx.send('`,v_stopコマンドを実行の上再度お試しください`')
@@ -135,8 +134,8 @@ class Voice(commands.Cog):
     @commands.command()
     async def v_stop(self, ctx):
         """音楽の再生を停止 (v0.0.6:停止時キャッシュ削除追加)"""
-        await ctx.message.delete()
         voice_client = ctx.message.guild.voice_client
+        await ctx.message.delete()
         if not voice_client.is_playing():
             await ctx.send('再生されていません')
         voice_client.stop()
@@ -148,10 +147,8 @@ class Voice(commands.Cog):
     @commands.command()
     async def v_skip(self, ctx, arg = '1'):
         """音楽をスキップ 引数:int 件数 (defalt: 1)"""
-        await ctx.message.delete()
-        #if self.__url.empty():
-        #    await ctx.send('キューに何もありません')
         voice_client = ctx.message.guild.voice_client
+        await ctx.message.delete()
         if int(arg) == 1:
             pass
         elif int(arg) <= 0:
@@ -167,8 +164,8 @@ class Voice(commands.Cog):
     @commands.command()
     async def v_pause(self, ctx):
         """音楽の再生をポーズする"""
-        await ctx.message.delete()
         voice_client = ctx.message.guild.voice_client
+        await ctx.message.delete()
         voice_client.pause()
         await ctx.send('pause!\n再開時はv_restartを')
     
@@ -183,8 +180,8 @@ class Voice(commands.Cog):
     @commands.command()
     async def rm_tmp(self, ctx):
         """手動でキャッシュを削除"""
-        await ctx.message.delete()
         voice_client = ctx.message.guild.voice_client
+        await ctx.message.delete()
         if voice_client.is_playing():
             voice_client.stop()
         shutil.rmtree(SAVE_DIR)
@@ -228,9 +225,9 @@ class Voice(commands.Cog):
     @commands.command()
     async def v_qplay(self, ctx):
         """キューにある楽曲を再生"""
-        await ctx.message.delete()
         # youtubeから音源再生
         voice_client = ctx.message.guild.voice_client
+        await ctx.message.delete()
         # すでに再生している場合は割り込み許可
         if voice_client.is_playing():
             await ctx.send('`,v_stopコマンドを実行の上再度お試しください`')
