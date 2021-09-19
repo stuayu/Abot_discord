@@ -27,6 +27,7 @@ Voice:
   v_add     キューに楽曲を追加 引数:URL (v0.0.7:複数URL対応)
   v_connect Abotをボイスチャットに入室
   v_d       Abotをボイスチャットから切断する
+  v_loop    再生中の楽曲をループさせます
   v_music   youtube-dlに対応したサイトから音楽を再生 v_music URL
   v_pause   音楽の再生をポーズする
   v_qck     キューにある楽曲とURLを10件まで表示する。
