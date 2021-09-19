@@ -1,6 +1,5 @@
 from __future__ import unicode_literals
 import random
-import subprocess
 import os
 from multiprocessing import Process
 import youtube_dl
@@ -135,7 +134,7 @@ def playlist(url):
 def ffmpeg_norm(source:str,output:str):
     """ffmpegを利用したノーマライズ"""
     cmd = 'ffmpeg -i ' + source +' -af dynaudnorm '+ output
-    proc = subprocess.run(cmd,stdout = subprocess.PIPE, stderr = subprocess.PIPE,shell=True)
+    proc = sp.run(cmd,stdout = sp.PIPE, stderr = sp.PIPE,shell=True)
     # 入力ファイル削除
     os.remove(source)
     logger.debug(proc.stdout.decode("utf8"))

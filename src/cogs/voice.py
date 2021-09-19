@@ -27,6 +27,7 @@ class Voice(commands.Cog):
         self.__url = queue.Queue()  # FIFOキューの作成
         self.__title = queue.Queue()  # FIFOキューの作成
         self.__stop:bool = False
+        self.__loop:bool = False
 
     @commands.command()
     async def v_connect(self,ctx):
@@ -64,6 +65,7 @@ class Voice(commands.Cog):
             url = str(ctx.message.content).split()[1]
             if not url or 'https://' not in url:
                 await ctx.send_help('v_music')
+                await ctx.send_help('v_music a_loop')
                 return
             # youtubeから音源再生
             voice_client = ctx.message.guild.voice_client
@@ -84,11 +86,29 @@ class Voice(commands.Cog):
             if voice_client.is_playing():
                 voice_client.stop()
             voice_client.play(source)
+            while voice_client.is_playing():
+                await asyncio.sleep(1)
+                if self.__loop == True:
+                    voice_client.play(source)
             return
 
     @v_music.command()
-    async def a_loop(self,ctx):
-        """プレイリスト(a_loop)をランダムに再生する v_music a_loop"""
+    async def a_loop(self,ctx,ck_list:str = 'all',rand_ck:str = 'True'):
+        """プレイリスト(a_loop)をランダムに再生する v_music a_loop
+        オプション :
+            再生リスト指定 (v_music a_loop <再生リスト指定>)
+                利用可能機能:
+                    all             :全曲再生
+                    yoasobi         :YOASOBIの楽曲
+                    first_take      :THE FIRST TAKEの楽曲
+                    porno           :ポルノグラフィティの楽曲
+                    anime           :アニソン全般
+                    a_2021_summer   :2021夏アニメ
+            ランダム再生   (v_music a_loop <再生リスト指定> <ランダム再生>)
+                利用可能機能:
+                    True    :ランダム再生
+                    False   :順次再生
+        """
         logger.debug('subcommand a_loop start ...')
         # youtubeから音源再生
         voice_client = ctx.message.guild.voice_client
@@ -99,10 +119,12 @@ class Voice(commands.Cog):
             return -1
         # 初期化
         next_m = ''
+        use_play = await m_list.ck_data(ck_list)
+        max = len(use_play)-1
         while True:
             if voice_client.is_playing() or voice_client.is_paused():
                 await asyncio.sleep(1)
-            elif not voice_client.is_playing():
+            elif not voice_client.is_playing() and self.__loop == False:
                 if self.__stop:
                     self.__stop = False
                     next_m = ''
@@ -110,10 +132,22 @@ class Voice(commands.Cog):
                     shutil.rmtree(SAVE_DIR)
                     os.mkdir(SAVE_DIR)
                     break
-                if next_m == '':
+                if next_m == '' and rand_ck == 'True':
                     logger.debug('最初の曲データをロード中')
-                    next_m = m_list.mylist[random.randint(0,len(m_list.mylist)-1)]
+                    next_m = use_play[random.randint(0,max)]
                     logger.debug('ロード成功:'+next_m)
+                elif next_m == '' and rand_ck == 'False':
+                    logger.debug('最初の曲データをロード中')
+                    index_m = 0 # 再生楽曲の場所のインデックス
+                    next_m = use_play[index_m]
+                    logger.debug('ロード成功:'+next_m)
+                elif len(next_m) > 5:
+                    pass
+                else:
+                    next_m = use_play[random.randint(0,max)]
+                    rand_ck = 'True'
+                    await ctx.send('`正しいランダムオプションが指定されませんでした。 defaltで動作します。`')
+                    await ctx.send_help('v_music a_loop')
                 data = y_dl.dl_music(next_m)
                 if type(data) is str:
                     await ctx.send('`'+data+'`')
@@ -127,9 +161,19 @@ class Voice(commands.Cog):
                 source = await discord.FFmpegOpusAudio.from_probe(m_file)
                 voice_client.play(source)
                 # 次の楽曲準備
-                next_m = m_list.mylist[random.randint(0,len(m_list.mylist)-1)]
+                if rand_ck == 'True':
+                    next_m = use_play[random.randint(0,max)]
+                elif rand_ck == 'False':
+                    index_m += 1
+                    if index_m >= max:
+                        next_m = use_play[index_m]
+                        index_m = 0
+                    next_m = use_play[index_m]
                 p = Process(target=y_dl.dl_music, args=(next_m,))
-                p.start()        
+                p.start()
+            elif not voice_client.is_playing() and self.__loop == True:
+                source = await discord.FFmpegOpusAudio.from_probe(m_file)
+                voice_client.play(source)
 
     @commands.command()
     async def v_stop(self, ctx):
@@ -168,7 +212,18 @@ class Voice(commands.Cog):
         await ctx.message.delete()
         voice_client.pause()
         await ctx.send('pause!\n再開時はv_restartを')
-    
+
+    @commands.command()
+    async def v_loop(self, ctx):
+        """再生中の楽曲をループさせます"""
+        voice_client = ctx.message.guild.voice_client
+        await ctx.message.delete()
+        if self.__loop == True:
+            self.__loop = False
+        else:
+            self.__loop = True
+        await ctx.send('loop start!')
+
     @commands.command()
     async def v_restart(self, ctx):
         """ポーズした楽曲を再生する"""
@@ -239,7 +294,7 @@ class Voice(commands.Cog):
         while not self.__url.empty() or voice_client.is_playing() or voice_client.is_paused():
             if voice_client.is_playing() or voice_client.is_paused():
                 await asyncio.sleep(1)
-            elif not voice_client.is_playing():
+            elif not voice_client.is_playing() and self.__loop == False:
                 if self.__stop:
                     self.__stop = False
                     # 動画ファイルを削除
@@ -266,6 +321,10 @@ class Voice(commands.Cog):
                     with self.__url.mutex:
                         p = Process(target=y_dl.dl_music, args=(self.__url.queue[0],))
                         p.start()
+
+            elif not voice_client.is_playing() and self.__loop == True:
+                source = await discord.FFmpegOpusAudio.from_probe(m_file)
+                voice_client.play(source)
 
     @commands.command()
     async def v_qck(self, ctx):
