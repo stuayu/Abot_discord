@@ -216,13 +216,13 @@ class Voice(commands.Cog):
     @commands.command()
     async def v_loop(self, ctx):
         """再生中の楽曲をループさせます"""
-        voice_client = ctx.message.guild.voice_client
         await ctx.message.delete()
         if self.__loop == True:
             self.__loop = False
+            await ctx.send('loop stop!')
         else:
             self.__loop = True
-        await ctx.send('loop start!')
+            await ctx.send('loop start!')
 
     @commands.command()
     async def v_restart(self, ctx):
