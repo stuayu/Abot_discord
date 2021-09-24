@@ -73,7 +73,7 @@ anime_2021_summer = [
     'https://youtu.be/q8TGietS5Q0', # Like Flames-MindaRyn
     'https://youtu.be/bF2iwhO5tyQ', # HELLO HORIZON-水瀬いのり
     'https://youtu.be/r7WgNxoupO0', # カザニア-愛美
-    'https://youtu.be/wdFAdCBcHVY&t=46', # Dream on-宮野真守
+    'https://youtu.be/wdFAdCBcHVY', # Dream on-宮野真守
     'https://youtu.be/vtuxTWxQ_cc', # Missing Promise-鈴木このみ
     'https://youtu.be/Nf8Oa-GGTfQ', # アンダンテに恋をして！-angela
     'https://youtu.be/traMXzjqYTA', # たゆたえ、七色-ARCANA PROJECT

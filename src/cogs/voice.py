@@ -1,4 +1,5 @@
 import random
+from discord.embeds import Embed
 from discord.ext import commands  # Bot Commands Frameworkのインポート
 import discord
 from multiprocessing import Pool,Process
@@ -157,7 +158,9 @@ class Voice(commands.Cog):
                 logger.debug(m_file)
                 while os.path.isfile(tmp):
                     await asyncio.sleep(1)
-                await ctx.send('`'+data['title']+'`')
+                embed = discord.Embed(name=data['title'],url=next_m,color=discord.Colour.red())
+                #await ctx.send('`'+data['title']+'`')
+                await ctx.send(embed=embed)
                 source = await discord.FFmpegOpusAudio.from_probe(m_file)
                 voice_client.play(source)
                 # 次の楽曲準備
@@ -305,7 +308,8 @@ class Voice(commands.Cog):
                             p = Process(target=y_dl.dl_music, args=(self.__url.queue[0],))
                             p.start()
                     break
-                data = y_dl.dl_music(self.__url.get())
+                url_d = self.__url.get()
+                data = y_dl.dl_music(url_d)
                 if type(data) is str:
                     await ctx.send('`'+data+'`')
                     return
@@ -314,7 +318,9 @@ class Voice(commands.Cog):
                 tmp = SAVE_DIR+data['id']+'--tmp.webm'
                 while os.path.isfile(tmp):
                     await asyncio.sleep(1)
-                await ctx.send('`'+self.__title.get()+'`')
+                embed_title = discord.Embed(name=self.__title.get(),url=url_d)
+                #await ctx.send('`'+self.__title.get()+'`')
+                await ctx.send(embed=embed_title)
                 source = await discord.FFmpegOpusAudio.from_probe(m_file)
                 voice_client.play(source)
                 if not self.__url.empty():
