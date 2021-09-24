@@ -1,8 +1,7 @@
 import random
-from discord.embeds import Embed
 from discord.ext import commands  # Bot Commands Frameworkのインポート
 import discord
-from multiprocessing import Pool,Process
+from multiprocessing import Process
 import playlist.a_loop as m_list
 import modules.y_dl as y_dl
 import os
@@ -25,10 +24,11 @@ class Voice(commands.Cog):
     # Voiceクラスのコンストラクタ。Botを受取り、インスタンス変数として保持。
     def __init__(self, bot):
         self.bot = bot
-        self.__url = queue.Queue()  # FIFOキューの作成
+        self.__url = queue.Queue()    # FIFOキューの作成
         self.__title = queue.Queue()  # FIFOキューの作成
-        self.__stop:bool = False
-        self.__loop:bool = False
+        self.__stop:bool = False      # stopチェック
+        self.__loop:bool = False      # loopチェック
+        self.__a_loop:bool = False    # a_loop動作チェック
 
     @commands.command()
     async def v_connect(self,ctx):
@@ -70,7 +70,7 @@ class Voice(commands.Cog):
                 return
             # youtubeから音源再生
             voice_client = ctx.message.guild.voice_client
-            
+            await ctx.message.delete()
             data = y_dl.dl_music(url)
 
             if type(data) is str:
@@ -81,7 +81,8 @@ class Voice(commands.Cog):
             tmp = SAVE_DIR+data['id']+'--tmp.webm'
             while os.path.isfile(tmp):
                 await asyncio.sleep(1)
-            await ctx.send('`'+data['title']+'`')
+            embed = discord.Embed(color=discord.Colour.red(),description='['+data['title']+']('+url+')')
+            await ctx.send(embed=embed)
             source = await discord.FFmpegOpusAudio.from_probe(m_file)
             # すでに再生している場合は割り込み許可
             if voice_client.is_playing():
@@ -111,6 +112,7 @@ class Voice(commands.Cog):
                     False   :順次再生
         """
         logger.debug('subcommand a_loop start ...')
+        self.__a_loop = True # a_loop 動作開始
         # youtubeから音源再生
         voice_client = ctx.message.guild.voice_client
         await ctx.message.delete()
@@ -128,6 +130,7 @@ class Voice(commands.Cog):
             elif not voice_client.is_playing() and self.__loop == False:
                 if self.__stop:
                     self.__stop = False
+                    self.__a_loop = False
                     next_m = ''
                     # 動画ファイルを削除
                     shutil.rmtree(SAVE_DIR)
@@ -158,8 +161,7 @@ class Voice(commands.Cog):
                 logger.debug(m_file)
                 while os.path.isfile(tmp):
                     await asyncio.sleep(1)
-                embed = discord.Embed(name=data['title'],url=next_m,color=discord.Colour.red())
-                #await ctx.send('`'+data['title']+'`')
+                embed = discord.Embed(color=discord.Colour.red(),description='['+data['title']+']('+next_m+')')
                 await ctx.send(embed=embed)
                 source = await discord.FFmpegOpusAudio.from_probe(m_file)
                 voice_client.play(source)
@@ -308,8 +310,8 @@ class Voice(commands.Cog):
                             p = Process(target=y_dl.dl_music, args=(self.__url.queue[0],))
                             p.start()
                     break
-                url_d = self.__url.get()
-                data = y_dl.dl_music(url_d)
+                url_m = self.__url.get()
+                data = y_dl.dl_music(url_m)
                 if type(data) is str:
                     await ctx.send('`'+data+'`')
                     return
@@ -318,9 +320,8 @@ class Voice(commands.Cog):
                 tmp = SAVE_DIR+data['id']+'--tmp.webm'
                 while os.path.isfile(tmp):
                     await asyncio.sleep(1)
-                embed_title = discord.Embed(name=self.__title.get(),url=url_d)
-                #await ctx.send('`'+self.__title.get()+'`')
-                await ctx.send(embed=embed_title)
+                embed = discord.Embed(color=discord.Colour.red(),description='['+self.__title.get()+']('+url_m+')')
+                await ctx.send(embed=embed)
                 source = await discord.FFmpegOpusAudio.from_probe(m_file)
                 voice_client.play(source)
                 if not self.__url.empty():
@@ -336,6 +337,10 @@ class Voice(commands.Cog):
     async def v_qck(self, ctx):
         """キューにある楽曲とURLを10件まで表示する。"""
         await ctx.message.delete()
+        if self.__a_loop:
+            embed = discord.Embed(title="a_loopを再生中",description="[a_loopの楽曲はこちらをご覧ください](https://github.com/stuayu/Abot_discord/blob/main/src/playlist/a_loop.py)",color=discord.Colour.red())
+            await ctx.send(embed=embed)
+            return
         l_data = ''
         with self.__url.mutex:
             with self.__title.mutex:
