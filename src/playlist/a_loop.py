@@ -63,6 +63,50 @@ anime = [
     'https://youtu.be/CpT00cqD6SY', # Magical Babyrinth-DA PUMP
     'https://youtu.be/iwIZpIK4UFU', # ココロショータイム-天月
     'https://youtu.be/86QIn8SmN5k', # ココロショータイム-天月 # short
+    'https://youtu.be/zOzy79zzEWA', # 凛-ASCA
+    'https://youtu.be/Be-Gb9fum7w', # RESISTER-ASCA
+    'https://youtu.be/TInRX_sIFGQ', # CHAIN-ASCA
+    'https://youtu.be/Cf7piHkO_VU', # Howling-ASCA
+    'https://youtu.be/0me_7B2rRIE', # SHINY DAYS-亜咲花
+    'https://youtu.be/uwph0dv9E6U', # Sincerely-TRUE
+    'https://youtu.be/lJ9twtxWieM', # WILL-TRUE
+    'https://youtu.be/UKU4B05fPck', # みちしるべ-茅原実里
+    'https://youtu.be/ZeSISQ9v4uc', # Violet Snow-結城アイラ
+    'https://youtu.be/JLQTiFwBVyI', # Storyteller-TRUE
+    'https://youtu.be/x2wUyP0l4bw', # Another colony-TRUE
+    'https://youtu.be/FMln2YjLbIM', # Blast!-TRUE
+    'https://youtu.be/X8QTW2gbME0', # colorless wind ~Piano ver.~-結城アイラ
+    'https://youtu.be/D94MDszmlWg', # まほうのかぜ-熊田茜音
+    'https://youtu.be/BxgIXq8H5n8', # colourless wind-結城アイラ
+    'https://youtu.be/7lH7csKBnzY', # 一番の宝物-Lia
+    'https://youtu.be/2sPDPr3S7Zg', # days-じん ft. Lia
+    'https://youtu.be/wtlu84ARGwY', # 絆-kizunairo-色-Lia
+    'https://youtu.be/_NZWYL3EFLk', # My Soul, Your Beats!-Lia
+    'https://youtu.be/WhRsyIGN-cA', # Bravely You-Lia
+    'https://youtu.be/t8vB1Xfj00E', # 君の知らない物語-Lia
+    'https://youtu.be/NcDeFT1r83o', # 乙女のルートはひとつじゃない！-angela
+    'https://youtu.be/uh8mL30Equk', # 君氏危うくも近うよれ-A応P
+    'https://youtu.be/rxyKfLmZiOg', # 全力バタンキュー-A応P
+    'https://youtu.be/iB4JdY2mQYc', # はなまるぴっぴはよいこだけ-A応P
+    'https://youtu.be/3FlVlOyHIKM', # Another World-A応P
+    'https://youtu.be/-_425NvP51w', # Brand new diary-熊田茜音
+    'https://youtu.be/XIIqgWUtPpk', # STORYSEEKER-STEREO DIVE FOUNDATION
+    'https://youtu.be/W2_V7X6fJ18', # Nameless Story-寺島拓篤
+    'https://youtu.be/upKRAWGYuLE', # メグルモノ-寺島拓篤
+    'https://youtu.be/FfwJ-ht4MfU', # starry-綾野ましろ
+    'https://youtu.be/tXsqImRzm80', # 灯火のまにまに-東山奈央
+    'https://youtu.be/94W5nENM0iM', # DEAREST DROP-田所あずさ
+    'https://youtu.be/TIe-pQNAiNA', # SHINY DAYS-東山奈央
+    'https://youtu.be/wdDL6IxOERk', # Against.-石原夏織
+    'https://youtu.be/iUWng4JaQhA', # 歩いていこう！-東山奈央
+    'https://youtu.be/_o5AmD3pykQ', # for...-逢田梨香子
+    'https://youtu.be/fj-yX-kJ-fQ', # UP-DATE × PLEASE!!! 9姉妹 全員Ver
+    'https://youtu.be/FCGCl8t4ENA', # UP-DATE × PLEASE!!!  ver 1.7.8-早乙女一千花・七樹・八雲(内山夕実/本渡楓/河瀬茉希)
+    'https://youtu.be/yrFYVd8BiL8', # 青空のラプソディ-スーパーちょろゴンず ver.-スーパーちょろゴンず
+    'https://youtu.be/39NPPMceSek', # メグメル-riya
+    'https://youtu.be/7YlDQpHXZPk', # リフレクティア-eufonius
+    'https://youtu.be/5K9I7c9gQNg', # 比翼の羽根-eufonius
+    'https://youtu.be/FIxyZLKFnpQ', # ココロニツボミ-eufonius
 ]
 
 anime_2021_summer = [
@@ -100,6 +144,31 @@ anime_2021_summer = [
     'https://youtu.be/3a7KuNsrwog', # Dark spiral journey-Q-MHz feat. 鈴華ゆう子
     'https://youtu.be/6SdxOgaEzDU', # Merry-Go-Round-MAN WITH A MISSION
 ]
+
+ikimono = [
+    # いきものがかり
+    'https://youtu.be/5XCSt_0lwOE', # 気まぐれロマンティック
+    'https://youtu.be/FLs2faYqoNU', # 熱情のスペクトラム
+    'https://youtu.be/lz8frtP6_kk', # YELL
+    'https://youtu.be/VZBU8LvZ91Q', # ありがとう
+    'https://youtu.be/KpsJWFuVTdI', # ブルーバード
+    'https://youtu.be/viQPExRmxdk', # じょいふる
+    'https://youtu.be/fLcSUrlS9us', # キミがいる
+    'https://youtu.be/61z-cqg28R8', # SAKURA
+]
+
+yorushika = [
+    # ヨルシカ
+    'https://www.youtube.com/watch?v=-VKIqrvVOpo', # ただ君に晴れ
+    'https://www.youtube.com/watch?v=KTZ-y85Erus', # だから僕は音楽を辞めた
+    'https://www.youtube.com/watch?v=F64yFFnZfkI', # 言って。
+    'https://www.youtube.com/watch?v=9lVPAWLWtWc', # 花に亡霊
+    'https://www.youtube.com/watch?v=t7MBzMP4OzY', # ヒッチコック
+    'https://www.youtube.com/watch?v=Sw1Flgub9s8', # 春泥棒
+    'https://www.youtube.com/watch?v=PWbRleMGagU', # 雨とカプチーノ
+    'https://www.youtube.com/watch?v=j83OVgv6woA', # ノーチラス
+    'https://www.youtube.com/watch?v=DlyG6MAKUOA', # 心に穴が空いた
+]
 async def ck_data(ck_list:str):
     """要求されたものを返す"""
     if ck_list == 'yoasobi':
@@ -112,8 +181,12 @@ async def ck_data(ck_list:str):
         use_play = anime
     elif ck_list == 'a_2021_summer':
         use_play = anime_2021_summer
+    elif ck_list == 'ikimono':
+        use_play = ikimono
+    elif ck_list == 'yorushika':
+        use_play = yorushika
     else:
-        use_play = yoasobi + first_take + porno_g + anime + anime_2021_summer
+        use_play = yoasobi + first_take + porno_g + anime + anime_2021_summer + ikimono + yorushika
     
     return use_play
 

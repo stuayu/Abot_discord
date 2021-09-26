@@ -106,6 +106,8 @@ class Voice(commands.Cog):
                     porno           :ポルノグラフィティの楽曲
                     anime           :アニソン全般
                     a_2021_summer   :2021夏アニメ
+                    ikimono         :いきものがかり
+                    yorushika       :ヨルシカ
             ランダム再生   (v_music a_loop <再生リスト指定> <ランダム再生>)
                 利用可能機能:
                     True    :ランダム再生
