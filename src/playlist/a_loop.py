@@ -105,8 +105,10 @@ anime = [
     'https://youtu.be/yrFYVd8BiL8', # 青空のラプソディ-スーパーちょろゴンず ver.-スーパーちょろゴンず
     'https://youtu.be/39NPPMceSek', # メグメル-riya
     'https://youtu.be/7YlDQpHXZPk', # リフレクティア-eufonius
-    'https://youtu.be/5K9I7c9gQNg', # 比翼の羽根-eufonius
+    #'https://youtu.be/5K9I7c9gQNg', # 比翼の羽根-eufonius # heroku X
+    'https://soundcloud.com/despot0130/20mmzsypixms', # 比翼の羽根-eufonius
     'https://youtu.be/FIxyZLKFnpQ', # ココロニツボミ-eufonius
+    'https://youtu.be/bqpEAIVqT6M', # YOU-YURIA
 ]
 
 anime_2021_summer = [
@@ -159,15 +161,15 @@ ikimono = [
 
 yorushika = [
     # ヨルシカ
-    'https://www.youtube.com/watch?v=-VKIqrvVOpo', # ただ君に晴れ
-    'https://www.youtube.com/watch?v=KTZ-y85Erus', # だから僕は音楽を辞めた
-    'https://www.youtube.com/watch?v=F64yFFnZfkI', # 言って。
-    'https://www.youtube.com/watch?v=9lVPAWLWtWc', # 花に亡霊
-    'https://www.youtube.com/watch?v=t7MBzMP4OzY', # ヒッチコック
-    'https://www.youtube.com/watch?v=Sw1Flgub9s8', # 春泥棒
-    'https://www.youtube.com/watch?v=PWbRleMGagU', # 雨とカプチーノ
-    'https://www.youtube.com/watch?v=j83OVgv6woA', # ノーチラス
-    'https://www.youtube.com/watch?v=DlyG6MAKUOA', # 心に穴が空いた
+    'https://youtu.be/-VKIqrvVOpo', # ただ君に晴れ
+    'https://youtu.be/KTZ-y85Erus', # だから僕は音楽を辞めた
+    'https://youtu.be/F64yFFnZfkI', # 言って。
+    'https://youtu.be/9lVPAWLWtWc', # 花に亡霊
+    'https://youtu.be/t7MBzMP4OzY', # ヒッチコック
+    'https://youtu.be/Sw1Flgub9s8', # 春泥棒
+    'https://youtu.be/PWbRleMGagU', # 雨とカプチーノ
+    'https://youtu.be/j83OVgv6woA', # ノーチラス
+    'https://youtu.be/DlyG6MAKUOA', # 心に穴が空いた
 ]
 async def ck_data(ck_list:str):
     """要求されたものを返す"""
