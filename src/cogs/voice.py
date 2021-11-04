@@ -1,4 +1,5 @@
 import random
+from discord.errors import ClientException
 from discord.ext import commands  # Bot Commands Frameworkのインポート
 import discord
 from multiprocessing import Process
@@ -35,7 +36,10 @@ class Voice(commands.Cog):
         """Abotをボイスチャットに入室"""
         # Botをボイスチャンネルに入室させます。
         voice_state = ctx.author.voice
-        await ctx.message.delete()
+        try:
+            await ctx.message.delete()
+        except:
+            pass
         if (not voice_state) or (not voice_state.channel):
             #もし送信者がどこのチャンネルにも入っていないなら
             await ctx.send("先にボイスチャンネルに入っている必要があります。")
@@ -71,7 +75,9 @@ class Voice(commands.Cog):
             # youtubeから音源再生
             voice_client = ctx.message.guild.voice_client
             await ctx.message.delete()
+            dl_ck = await ctx.send('`Now downloading ...`')
             data = y_dl.dl_music(url)
+            await dl_ck.delete()
 
             if type(data) is str:
                 await ctx.send('`'+data+'`')
@@ -79,20 +85,30 @@ class Voice(commands.Cog):
             m_file = SAVE_DIR+data['id']+'.webm'
             print(m_file)
             tmp = SAVE_DIR+data['id']+'--tmp.webm'
+            convert_ck = await ctx.send('`Start conversion by ffmpeg ...`')
             while os.path.isfile(tmp):
                 await asyncio.sleep(1)
+            await convert_ck.delete()
             embed = discord.Embed(color=discord.Colour.red(),description='['+data['title']+']('+url+')')
             await ctx.send(embed=embed)
             source = await discord.FFmpegOpusAudio.from_probe(m_file)
-            # すでに再生している場合は割り込み許可
-            if voice_client.is_playing():
-                voice_client.stop()
-            voice_client.play(source)
-            while voice_client.is_playing():
-                await asyncio.sleep(1)
-                if self.__loop == True:
+            for _ in range(2):
+                try:
+                    # すでに再生している場合は割り込み許可
+                    if voice_client.is_playing():
+                        voice_client.stop()
                     voice_client.play(source)
+                    while voice_client.is_playing():
+                        await asyncio.sleep(1)
+                        if self.__loop == True:
+                            voice_client.play(source)
+                    break
+                except Exception as e:
+                    await Voice.v_connect(self,ctx)
+                    voice_client = ctx.message.guild.voice_client
+                    #logger.debug(e.args[0])
             return
+    
 
     @v_music.command()
     async def a_loop(self,ctx,ck_list:str = 'all',rand_ck:str = 'True'):
@@ -110,8 +126,8 @@ class Voice(commands.Cog):
                     yorushika       :ヨルシカ
             ランダム再生   (v_music a_loop <再生リスト指定> <ランダム再生>)
                 利用可能機能:
-                    True    :ランダム再生
-                    False   :順次再生
+                    True  or 1  :ランダム再生
+                    False or 0  :順次再生
         """
         logger.debug('subcommand a_loop start ...')
         self.__a_loop = True # a_loop 動作開始
@@ -119,9 +135,16 @@ class Voice(commands.Cog):
         voice_client = ctx.message.guild.voice_client
         await ctx.message.delete()
         # すでに再生している場合は割り込み許可
-        if voice_client.is_playing():
-            await ctx.send('`,v_stopコマンドを実行の上再度お試しください`')
-            return -1
+        for _ in range(2):
+            try:
+                if voice_client.is_playing():
+                    await Voice.v_stop(self,ctx)
+                break
+            except Exception as e:
+                await Voice.v_connect(self,ctx)
+                voice_client = ctx.message.guild.voice_client
+                logger.debug(e.args[0])
+                #await ctx.send('`'+e.args[0]+'`')
         # 初期化
         next_m = ''
         use_play = await m_list.ck_data(ck_list)
@@ -135,42 +158,61 @@ class Voice(commands.Cog):
                     self.__a_loop = False
                     next_m = ''
                     # 動画ファイルを削除
-                    shutil.rmtree(SAVE_DIR)
-                    os.mkdir(SAVE_DIR)
+                    # shutil.rmtree(SAVE_DIR)
+                    # os.mkdir(SAVE_DIR)
                     break
-                if next_m == '' and rand_ck == 'True':
+                if next_m == '' and (rand_ck == 'True' or rand_ck == '1'):
                     logger.debug('最初の曲データをロード中')
                     next_m = use_play[random.randint(0,max)]
                     logger.debug('ロード成功:'+next_m)
-                elif next_m == '' and rand_ck == 'False':
+                elif next_m == '' and (rand_ck == 'False' or rand_ck == '0'):
                     logger.debug('最初の曲データをロード中')
                     index_m = 0 # 再生楽曲の場所のインデックス
                     next_m = use_play[index_m]
                     logger.debug('ロード成功:'+next_m)
                 elif len(next_m) > 5:
+                    logger.debug('URLチェック通過')
                     pass
                 else:
                     next_m = use_play[random.randint(0,max)]
                     rand_ck = 'True'
                     await ctx.send('`正しいランダムオプションが指定されませんでした。 defaltで動作します。`')
                     await ctx.send_help('v_music a_loop')
+                dl_ck = await ctx.send('`Now downloading ...`')
                 data = y_dl.dl_music(next_m)
+                await dl_ck.delete()
                 if type(data) is str:
+                    # 楽曲再生に失敗した場合の処理
                     await ctx.send('`'+data+'`')
-                    return
+                    # 次の楽曲準備
+                    if rand_ck == 'True':
+                        next_m = use_play[random.randint(0,max)]
+                    elif rand_ck == 'False':
+                        index_m += 1
+                        if index_m >= max:
+                            next_m = use_play[index_m]
+                            index_m = 0
+                        next_m = use_play[index_m]
+                    data = y_dl.dl_music(next_m)
                 m_file = SAVE_DIR+data['id']+'.webm'
                 tmp = SAVE_DIR+data['id']+'--tmp.webm'
                 logger.debug(m_file)
+                convert_ck = await ctx.send('`Start conversion by ffmpeg ...`')
                 while os.path.isfile(tmp):
                     await asyncio.sleep(1)
+                await convert_ck.delete()
                 embed = discord.Embed(color=discord.Colour.red(),description='['+data['title']+']('+next_m+')')
                 await ctx.send(embed=embed)
                 source = await discord.FFmpegOpusAudio.from_probe(m_file)
-                voice_client.play(source)
+                try:
+                    voice_client.play(source)
+                except ClientException:
+                    await Voice.v_connect(self,ctx)
+                    voice_client.play(source)
                 # 次の楽曲準備
-                if rand_ck == 'True':
+                if rand_ck == 'True' or rand_ck == '1':
                     next_m = use_play[random.randint(0,max)]
-                elif rand_ck == 'False':
+                elif rand_ck == 'False' or rand_ck == '0':
                     index_m += 1
                     if index_m >= max:
                         next_m = use_play[index_m]
@@ -183,29 +225,35 @@ class Voice(commands.Cog):
                 voice_client.play(source)
 
     @commands.command()
-    async def v_stop(self, ctx):
-        """音楽の再生を停止 (v0.0.6:停止時キャッシュ削除追加)"""
+    async def v_stop(self, ctx, rm_music = 'False'):
+        """音楽の再生を停止 (v0.0.6:停止時キャッシュ削除追加)
+            option:
+                rm_music: キャッシュ済みの音楽データを削除するか
+                    True or 1  : 削除
+                    False or 0 : 残す(defalt)
+        """
         voice_client = ctx.message.guild.voice_client
         await ctx.message.delete()
         if not voice_client.is_playing():
             await ctx.send('再生されていません')
         voice_client.stop()
         self.__stop = True
-        shutil.rmtree(SAVE_DIR)
-        os.mkdir(SAVE_DIR)
+        if rm_music == 'True' or rm_music == '1':
+            shutil.rmtree(SAVE_DIR)
+            os.mkdir(SAVE_DIR)
         #await ctx.send('stop!')
 
     @commands.command()
-    async def v_skip(self, ctx, arg = '1'):
-        """音楽をスキップ 引数:int 件数 (defalt: 1)"""
+    async def v_skip(self, ctx, skip_num = '1'):
+        """音楽をスキップ"""
         voice_client = ctx.message.guild.voice_client
         await ctx.message.delete()
-        if int(arg) == 1:
+        if int(skip_num) == 1:
             pass
-        elif int(arg) <= 0:
+        elif int(skip_num) <= 0:
             return 0
         else:
-            for i in range(int(arg) - 1):
+            for i in range(int(skip_num) - 1):
                 self.__url.get()
                 self.__title.get()
 
@@ -300,18 +348,18 @@ class Voice(commands.Cog):
 
         while not self.__url.empty() or voice_client.is_playing() or voice_client.is_paused():
             if voice_client.is_playing() or voice_client.is_paused():
+                # 音楽再生中orポーズ中に動作
                 await asyncio.sleep(1)
             elif not voice_client.is_playing() and self.__loop == False:
-                if self.__stop:
+                # 音楽がストップand単体ループが無効状態の時
+                if self.__stop: # v_stopが実行されたら
                     self.__stop = False
-                    # 動画ファイルを削除
-                    shutil.rmtree(SAVE_DIR)
-                    os.mkdir(SAVE_DIR)
                     if not self.__url.empty():
                         with self.__url.mutex:
                             p = Process(target=y_dl.dl_music, args=(self.__url.queue[0],))
                             p.start()
                     break
+                # 以下音楽再生処理
                 url_m = self.__url.get()
                 data = y_dl.dl_music(url_m)
                 if type(data) is str:
@@ -328,10 +376,12 @@ class Voice(commands.Cog):
                 voice_client.play(source)
                 if not self.__url.empty():
                     with self.__url.mutex:
+                        # マルチスレッドで処理(処理待ちは行わない)
                         p = Process(target=y_dl.dl_music, args=(self.__url.queue[0],))
                         p.start()
 
             elif not voice_client.is_playing() and self.__loop == True:
+                # 単体ループが有効の時
                 source = await discord.FFmpegOpusAudio.from_probe(m_file)
                 voice_client.play(source)
 

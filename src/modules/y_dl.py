@@ -2,7 +2,8 @@ from __future__ import unicode_literals
 import random
 import os
 from multiprocessing import Process
-import youtube_dl
+#import youtube_dl
+import yt_dlp
 import json
 import subprocess as sp
 
@@ -41,6 +42,8 @@ ydl_opts1 = {
     'logger': MyLogger(),
     'cookiefile': '/app/cookies.txt',
     'proxy': proxy_ip,
+    'geo-bypass': 'True',
+    'geo-bypass-country': 'JP',
     'verbose': 'True',
     'logger': logger,
     'source_address': '0.0.0.0',
@@ -52,9 +55,11 @@ ydl_opts1 = {
 }
 
 ydl_opts2 = {
-    'format': 'bestaudio[acodec=opus]/bestaudio/best -x',
+    'format': 'bestaudio[acodec=opus]/bestaudio/best/ba*/b -x',
     'logger': MyLogger(),
     'cookiefile': '/app/cookies.txt',
+    'geo-bypass': 'True',
+    'geo-bypass-country': 'JP',
     'retries': 0,
     'noplaylist': 'True',
     'verbose': 'True',
@@ -66,7 +71,7 @@ ydl_opts2 = {
 }
 
 ydl_opts3 = {
-    'format': 'bestaudio[acodec=opus]/bestaudio/best -x',
+    'format': 'bestaudio/best*[acodec!=none][abr>=192][height<=480]/best*[acodec!=none][height<=480]/ba*/best*[acodec!=none] -x',
     'logger': MyLogger(),
     'verbose': 'True',
     'logger': logger,
@@ -81,6 +86,8 @@ playlist_opt1 = {
     'extract_flat': 'in_playlist',
     'socket_timeout': 5,
     'retries': 0,
+    'geo-bypass': 'True',
+    'geo-bypass-country': 'JP',
     'cookiefile': '/app/cookies.txt',
     'socket_timeout': 15,
     'dumpjson': 'True',
@@ -90,6 +97,8 @@ playlist_opt2 = {
     'extract_flat': 'in_playlist',
     'dumpjson': 'True',
     'cookiefile': '/app/cookies.txt',
+    'geo-bypass': 'True',
+    'geo-bypass-country': 'JP',
     'proxy': proxy_ip,
     'retries': 0,
     'socket_timeout': 30,
@@ -102,27 +111,49 @@ def dl_music(url:str):
         opt2 = os.path.isfile(SAVE_DIR+url.replace('https://youtu.be/','')+'.webm')
         logger.debug('youtube login')
         try:
-            with youtube_dl.YoutubeDL(ydl_opts2) as ydl:
+            with yt_dlp.YoutubeDL(ydl_opts2) as ydl:
                 if opt1 or opt2:
                     meta = ydl.extract_info(url, download=False)
                 else:
                     meta = ydl.extract_info(url, download=True)
-                input = SAVE_DIR+meta['id']+'--tmp.webm'
-                output = SAVE_DIR+meta['id']+'.webm'
-                p = Process(target=ffmpeg_norm, args=(input,output,))
-                p.start()
+                    input = SAVE_DIR+meta['id']+'--tmp.webm'
+                    output = SAVE_DIR+meta['id']+'.webm'
+                    p = Process(target=ffmpeg_norm, args=(input,output,))
+                    p.start()
                 return meta
         except Exception as e:
             logger.debug(e.args[0])
             return e.args[0]
+    elif 'nicovideo' in url:
+        opt1 = os.path.isfile(SAVE_DIR+url.replace('https://www.nicovideo.jp/watch/','')+'.webm')
+        logger.debug('niconico login')
+        try:
+            with yt_dlp.YoutubeDL(ydl_opts3) as ydl:
+                if opt1:
+                    meta = ydl.extract_info(url, download=False)
+                else:
+                    meta = ydl.extract_info(url, download=True)
+                    input = SAVE_DIR+meta['id']+'--tmp.webm'
+                    output = SAVE_DIR+meta['id']+'.webm'
+                    p = Process(target=ffmpeg_norm, args=(input,output,))
+                    p.start()
+                return meta
+        except Exception as e:
+            logger.debug(e.args[0])
+            return e.args[0]
+            
     else:
-        with youtube_dl.YoutubeDL(ydl_opts3) as ydl:
+        with yt_dlp.YoutubeDL(ydl_opts3) as ydl:
             meta = ydl.extract_info(url, download=True)
+            input = SAVE_DIR+meta['id']+'--tmp.webm'
+            output = SAVE_DIR+meta['id']+'.webm'
+            p = Process(target=ffmpeg_norm, args=(input,output,))
+            p.start()
         return meta
 
 def playlist(url):
     try:
-        with youtube_dl.YoutubeDL(playlist_opt1) as ydl:
+        with yt_dlp.YoutubeDL(playlist_opt1) as ydl:
             info_dict = ydl.extract_info(url, download=False)
             o = json.loads(json.dumps(info_dict, ensure_ascii=False))
         return o
@@ -133,7 +164,8 @@ def playlist(url):
 
 def ffmpeg_norm(source:str,output:str):
     """ffmpegを利用したノーマライズ"""
-    cmd = 'ffmpeg -i ' + source +' -af dynaudnorm '+ output
+    cmd = 'ffmpeg -i ' + source +' -vn -af dynaudnorm '+ output
+    logger.debug('ffmpeg cmd:'+cmd)
     proc = sp.run(cmd,stdout = sp.PIPE, stderr = sp.PIPE,shell=True)
     # 入力ファイル削除
     os.remove(source)

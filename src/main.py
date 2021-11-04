@@ -48,7 +48,7 @@ class MyBot(commands.Bot):
         logger.info('-----')
         logger.info(self.user.name)
         logger.info(self.user.id)
-        await bot.change_presence(activity=discord.Game(name="Abot v0.0.11", type=1))
+        await bot.change_presence(activity=discord.Game(name="Abot v0.1.0", type=1))
         logger.info('-----')
 
 class JapaneseHelpCommand(commands.DefaultHelpCommand):
