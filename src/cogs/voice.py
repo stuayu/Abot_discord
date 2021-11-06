@@ -3,7 +3,7 @@ from discord.errors import ClientException
 from discord.ext import commands  # Bot Commands Frameworkのインポート
 import discord
 from multiprocessing import Process
-import playlist.a_loop as m_list
+from playlist.selector import ck_data
 import modules.y_dl as y_dl
 import os
 import shutil
@@ -25,17 +25,22 @@ class Voice(commands.Cog):
     # Voiceクラスのコンストラクタ。Botを受取り、インスタンス変数として保持。
     def __init__(self, bot):
         self.bot = bot
+        self.__queue=[]              # urlとtitleのキューオブジェクト格納用
         self.__url = queue.Queue()    # FIFOキューの作成
         self.__title = queue.Queue()  # FIFOキューの作成
         self.__stop:bool = False      # stopチェック
         self.__loop:bool = False      # loopチェック
         self.__a_loop:bool = False    # a_loop動作チェック
+        self.__channel_embed_list=[]  # channelとembedのリスト
 
     @commands.command()
     async def v_connect(self,ctx):
         """Abotをボイスチャットに入室"""
-        # Botをボイスチャンネルに入室させます。
+        # Botをボイスチャンネルに入室させます。またキューの初期化処理
         voice_state = ctx.author.voice
+        #channnel_id = ctx.channel.id
+        # 追加タイプ [channnel_id,url_queue,title_queue,stopチェック,loopチェック,a_loop動作チェック]
+        #self.__queue.append([channnel_id,queue.Queue(),queue.Queue(),False,False,False])
         try:
             await ctx.message.delete()
         except:
@@ -75,9 +80,22 @@ class Voice(commands.Cog):
             # youtubeから音源再生
             voice_client = ctx.message.guild.voice_client
             await ctx.message.delete()
-            dl_ck = await ctx.send('`Now downloading ...`')
+            # embedでメッセージ作成(通知減少のため再利用する方針)
+            if self.__channel_embed_list:
+                for _id, _embed, _send_massage in self.__channel_embed_list:
+                        if ctx.channel.id == _id:
+                            embed = _embed
+                            send_massage = _send_massage
+                            break
+                embed.description = 'Now downloading ...'
+                await send_massage.edit(embed=embed)
+            else:
+                embed = discord.Embed(color=discord.Colour.red(),description='Now downloading ...')
+                send_massage = await ctx.send(embed=embed)
+                self.__channel_embed_list.append([ctx.channel.id,embed,send_massage])
+                
             data = y_dl.dl_music(url)
-            await dl_ck.delete()
+            #await dl_ck.delete()
 
             if type(data) is str:
                 await ctx.send('`'+data+'`')
@@ -85,12 +103,14 @@ class Voice(commands.Cog):
             m_file = SAVE_DIR+data['id']+'.webm'
             print(m_file)
             tmp = SAVE_DIR+data['id']+'--tmp.webm'
-            convert_ck = await ctx.send('`Start conversion by ffmpeg ...`')
+            embed.description = 'Start conversion by ffmpeg ...'
+            await send_massage.edit(embed=embed)
             while os.path.isfile(tmp):
                 await asyncio.sleep(1)
-            await convert_ck.delete()
-            embed = discord.Embed(color=discord.Colour.red(),description='['+data['title']+']('+url+')')
-            await ctx.send(embed=embed)
+
+            embed.description = '['+data['title']+']('+url+')'
+            #embed = discord.Embed(color=discord.Colour.red(),description='['+data['title']+']('+url+')')
+            await send_massage.edit(embed=embed)
             source = await discord.FFmpegOpusAudio.from_probe(m_file)
             for _ in range(2):
                 try:
@@ -147,7 +167,7 @@ class Voice(commands.Cog):
                 #await ctx.send('`'+e.args[0]+'`')
         # 初期化
         next_m = ''
-        use_play = await m_list.ck_data(ck_list)
+        use_play = await ck_data(ck_list)
         max = len(use_play)-1
         while True:
             if voice_client.is_playing() or voice_client.is_paused():
@@ -178,9 +198,23 @@ class Voice(commands.Cog):
                     rand_ck = 'True'
                     await ctx.send('`正しいランダムオプションが指定されませんでした。 defaltで動作します。`')
                     await ctx.send_help('v_music a_loop')
-                dl_ck = await ctx.send('`Now downloading ...`')
+                
+                ### embed object 再編集のための処理
+                if self.__channel_embed_list:
+                    for _id, _embed, _send_massage in self.__channel_embed_list:
+                        if ctx.channel.id == _id:
+                            embed = _embed
+                            send_massage = _send_massage
+                            break
+                    embed.description = 'Now downloading ...'
+                    await send_massage.edit(embed=embed)
+                else:
+                    embed = discord.Embed(color=discord.Colour.red(),description='Now downloading ...')
+                    send_massage = await ctx.send(embed=embed)
+                    self.__channel_embed_list.append([ctx.channel.id,embed,send_massage])
+                    
                 data = y_dl.dl_music(next_m)
-                await dl_ck.delete()
+
                 if type(data) is str:
                     # 楽曲再生に失敗した場合の処理
                     await ctx.send('`'+data+'`')
@@ -197,12 +231,17 @@ class Voice(commands.Cog):
                 m_file = SAVE_DIR+data['id']+'.webm'
                 tmp = SAVE_DIR+data['id']+'--tmp.webm'
                 logger.debug(m_file)
-                convert_ck = await ctx.send('`Start conversion by ffmpeg ...`')
+
+                embed.description = 'Start conversion by ffmpeg ...'
+                await send_massage.edit(embed=embed)
+
                 while os.path.isfile(tmp):
                     await asyncio.sleep(1)
-                await convert_ck.delete()
-                embed = discord.Embed(color=discord.Colour.red(),description='['+data['title']+']('+next_m+')')
-                await ctx.send(embed=embed)
+
+                embed.description = '['+data['title']+']('+next_m+')'
+
+                await send_massage.edit(embed=embed)
+
                 source = await discord.FFmpegOpusAudio.from_probe(m_file)
                 try:
                     voice_client.play(source)
@@ -232,6 +271,10 @@ class Voice(commands.Cog):
                     True or 1  : 削除
                     False or 0 : 残す(defalt)
         """
+        for i in range(len(self.__channel_embed_list)-1):
+            if ctx.channel.id == self.__channel_embed_list[i][0]:
+                del self.__channel_embed_list[i]
+                break
         voice_client = ctx.message.guild.voice_client
         await ctx.message.delete()
         if not voice_client.is_playing():

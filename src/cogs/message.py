@@ -21,7 +21,7 @@ class Message(commands.Cog):
     async def on_message(self, message):
         #channel = self.bot.get_channel('879005759336251412')
         # 自分からのメッセージには返信しないように
-        if message.author.bot or str(message.author.name) == 'BotCallerBot':
+        if message.author.bot:
             return
         else:
             # 添付ファイルの属性を処理
@@ -45,6 +45,15 @@ class Message(commands.Cog):
     async def test(self, ctx,*,arg):
         """動作チェックのオウム返し(複数指定化 v0.0.6)"""
         await ctx.send(arg)
+
+    @commands.command()
+    async def check_ctx(self, ctx):
+        """動作チェックのオウム返し(複数指定化 v0.0.6)"""
+        data = ctx.channel.id
+        # チャンネルIDを取得
+        channel = self.bot.get_channel(id = data)
+        await ctx.send(data)
+        await channel.send('チャンネルIDに送信しています')
 
     @commands.command()
     async def syosetu(self, ctx):

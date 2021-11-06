@@ -3,7 +3,7 @@ import traceback  # エラー表示のためにインポート
 import json
 from discord.ext import commands
 
-# logを出すためのおまじない #
+########### logを出すためのおまじない ###############
 from logging import getLogger, StreamHandler, DEBUG
 logger = getLogger(__name__)
 handler = StreamHandler()
@@ -11,7 +11,9 @@ handler.setLevel(DEBUG)
 logger.setLevel(DEBUG)
 logger.addHandler(handler)
 logger.propagate = False
-
+#####################################################
+STATUS_MESSAGE = "Abot v0.2.0"
+#####################################################
 data = json.load(open('modules/settings.json', 'r'))
 TOKEN = data['token']
 # 読み込むコグの名前を格納しておく。
@@ -48,7 +50,7 @@ class MyBot(commands.Bot):
         logger.info('-----')
         logger.info(self.user.name)
         logger.info(self.user.id)
-        await bot.change_presence(activity=discord.Game(name="Abot v0.1.0", type=1))
+        await bot.change_presence(activity=discord.Game(name=STATUS_MESSAGE, type=1))
         logger.info('-----')
 
 class JapaneseHelpCommand(commands.DefaultHelpCommand):
