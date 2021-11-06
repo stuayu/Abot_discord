@@ -2,7 +2,7 @@
 import requests
 import json
 # 短縮URLサービス
-setting = json.load(open('modules/settings.json', 'r'))
+setting = json.load(open('src/modules/settings.json', 'r'))
 token = setting['short_token']
 
 def get_shortenURL(longUrl):

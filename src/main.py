@@ -14,7 +14,7 @@ logger.propagate = False
 #####################################################
 STATUS_MESSAGE = "Abot v0.2.0"
 #####################################################
-data = json.load(open('modules/settings.json', 'r'))
+data = json.load(open('src/modules/settings.json', 'r'))
 TOKEN = data['token']
 # 読み込むコグの名前を格納しておく。
 INITIAL_EXTENSIONS = [

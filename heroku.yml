@@ -1,6 +1,6 @@
 build:
   docker:
-   discordbot: docker/Dockerfile.heroku
+   discordbot: Dockerfile.heroku
 
 #release:
 #  image: worker

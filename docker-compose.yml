@@ -8,13 +8,13 @@ services:
 
     build: 
       context: .
-      dockerfile: ./docker/Dockerfile.local
+      dockerfile: ./Dockerfile.local
 
     volumes: 
       - ./music:/tmp/discordbot/
-      - ./src:/app/
+      - .:/app/
 
-    command: python /app/main.py
+    command: python /app/src/main.py
 
     environment:
       TZ: Asia/Tokyo
