@@ -4,11 +4,16 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-"discord.py" = {extras = ["voice"], version = "*"}
 bs4 = "*"
 requests = "*"
 speedtest-cli = "*"
 yt-dlp = {git = "https://github.com/yt-dlp/yt-dlp"}
+py-cord = {extras = ["speed", "voice"], git = "https://github.com/Pycord-Development/pycord.git"}
+pynacl = "*"
+aiodns = "*"
+brotli = "*"
+cchardet = "*"
+orjson = "*"
 
 [dev-packages]
 

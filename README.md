@@ -1,4 +1,12 @@
 # Abot_discord
+- [Abot_discord](#abot_discord)
+  - [コマンド一覧](#コマンド一覧)
+  - [IssuesとPull requests方針](#issuesとpull-requests方針)
+  - [手順](#手順)
+  - [local環境での実行方法](#local環境での実行方法)
+  - [HerokuでDockerを動かす場合](#herokuでdockerを動かす場合)
+
+## コマンド一覧
 詳細はソースコードのコメントアウトを確認してください。  
 helpの内容を下に置きます。
 ```
@@ -11,6 +19,7 @@ Gif:
   onegai    メイドラゴンGIF
   thx       メイドラゴンGIF
 Message:
+  check_ctx 動作チェックのオウム返し(複数指定化 v0.0.6)
   getip     IPアドレスを取得
   syosetu   小説サイトのurlを表示するだけ
   test      動作チェックのオウム返し(複数指定化 v0.0.6)
@@ -28,13 +37,13 @@ Voice:
   v_connect Abotをボイスチャットに入室
   v_d       Abotをボイスチャットから切断する
   v_loop    再生中の楽曲をループさせます
-  v_music   youtube-dlに対応したサイトから音楽を再生 v_music URL
+  v_music   youtube-dlpに対応したサイトから音楽を再生 v_music URL
   v_pause   音楽の再生をポーズする
   v_qck     キューにある楽曲とURLを10件まで表示する。
   v_qcr     キューを空にする
   v_qplay   キューにある楽曲を再生
   v_restart ポーズした楽曲を再生する
-  v_skip    音楽をスキップ 引数:int 件数 (defalt: 1)
+  v_skip    音楽をスキップ
   v_stop    音楽の再生を停止 (v0.0.6:停止時キャッシュ削除追加)
 ​その他:
   help      コマンド一覧と簡単な説明を表示 (v0.0.7:大幅改定)

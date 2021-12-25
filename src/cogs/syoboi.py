@@ -1,5 +1,6 @@
 from discord.ext import commands,tasks  # Bot Commands Frameworkのインポート
 import discord
+from discord.commands import slash_command, SlashCommandGroup
 import modules.syoboical as syobocal
 import asyncio
 import time
@@ -20,8 +21,8 @@ class Syoboi(commands.Cog):
         self.bot = bot
 
     # 送ったコマンドを表示するだけ (クラスはselfが必須なため注意)
-    @commands.command()
-    async def a_prog(self, ctx, arg = '0'):
+    @slash_command()
+    async def a_prog(self, ctx: discord.ApplicationContext, arg = '0'):
         """しょぼいカレンダーからアニメの放送予定を取得 引数:何日後の予定かを数値で入力 (defalt:0)"""
         data = await syobocal.anime_prog(arg)
         logger.debug(data)
@@ -31,7 +32,7 @@ class Syoboi(commands.Cog):
         for (title,a_list) in data:
             embed.add_field(name=title,value=a_list, inline=False)
 
-        await ctx.send(embed=embed)
+        await ctx.respond(embed=embed)
         
 # Bot本体側からコグを読み込む際に呼び出される関数。
 def setup(bot):

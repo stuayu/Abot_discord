@@ -36,76 +36,36 @@ def my_hook(d):
     if d['status'] == 'finished':
         print('Done downloading, now converting ...')
 
-
 ydl_opts1 = {
-    'format': 'bestaudio[acodec=opus]/bestaudio/best -x',
+    'format': 'bestaudio[acodec=opus]/bestaudio/best/ba*/b -x',
     'logger': MyLogger(),
-    'cookiefile': '/app/cookies.txt',
-    #'proxy': proxy_ip,
-    #'geo-bypass': 'True',
-    #'geo-bypass-country': 'JP',
+    'retries': 0,
+    'noplaylist': 'True',
     'verbose': 'True',
     'logger': logger,
-    #'source_address': '0.0.0.0',
-    'noplaylist': 'True',
     'socket_timeout': 15,
-    'retries': 0,
     'progress_hooks': [my_hook],
     'outtmpl': SAVE_DIR+'%(id)s--tmp.webm',
 }
 
 ydl_opts2 = {
-    'format': 'bestaudio[acodec=opus]/bestaudio/best/ba*/b -x',
-    'logger': MyLogger(),
-    'cookiefile': '/app/cookies.txt',
-    #'geo-bypass': 'True',
-    #'geo-bypass-country': 'JP',
-    'retries': 0,
-    'noplaylist': 'True',
-    'verbose': 'True',
-    'logger': logger,
-    #'source_address': '0.0.0.0',
-    'socket_timeout': 15,
-    'progress_hooks': [my_hook],
-    'outtmpl': SAVE_DIR+'%(id)s--tmp.webm',
-}
-
-ydl_opts3 = {
     'format': 'bestaudio/best*[acodec!=none][abr>=192][height<=480]/best*[acodec!=none][height<=480]/ba*/best*[acodec!=none] -x',
     'logger': MyLogger(),
     'verbose': 'True',
     'logger': logger,
     'noplaylist': 'True',
-    #'source_address': '0.0.0.0',
     'socket_timeout': 30,
     'progress_hooks': [my_hook],
     'outtmpl': SAVE_DIR+'%(id)s--tmp.webm',
 }
 
-playlist_opt1 = {
+playlist_opt = {
     'extract_flat': 'in_playlist',
     'socket_timeout': 5,
     'retries': 0,
-    #'geo-bypass': 'True',
-    #'geo-bypass-country': 'JP',
-    #'source_address': '0.0.0.0',
-    'cookiefile': '/app/cookies.txt',
     'socket_timeout': 15,
     'dumpjson': 'True',
 }
-
-playlist_opt2 = {
-    'extract_flat': 'in_playlist',
-    'dumpjson': 'True',
-    'cookiefile': '/app/cookies.txt',
-    #'source_address': '0.0.0.0',
-    #'geo-bypass': 'True',
-    #'geo-bypass-country': 'JP',
-    #'proxy': proxy_ip,
-    'retries': 0,
-    'socket_timeout': 30,
-}
-
 
 def dl_music(url:str):
     if 'youtu' in url:
@@ -113,7 +73,7 @@ def dl_music(url:str):
         opt2 = os.path.isfile(SAVE_DIR+url.replace('https://youtu.be/','')+'.webm')
         logger.debug('youtube login')
         try:
-            with yt_dlp.YoutubeDL(ydl_opts2) as ydl:
+            with yt_dlp.YoutubeDL(ydl_opts1) as ydl:
                 if opt1 or opt2:
                     meta = ydl.extract_info(url, download=False)
                 else:
@@ -130,7 +90,7 @@ def dl_music(url:str):
         opt1 = os.path.isfile(SAVE_DIR+url.replace('https://www.nicovideo.jp/watch/','')+'.webm')
         logger.debug('niconico login')
         try:
-            with yt_dlp.YoutubeDL(ydl_opts3) as ydl:
+            with yt_dlp.YoutubeDL(ydl_opts2) as ydl:
                 if opt1:
                     meta = ydl.extract_info(url, download=False)
                 else:
@@ -145,7 +105,7 @@ def dl_music(url:str):
             return e.args[0]
             
     else:
-        with yt_dlp.YoutubeDL(ydl_opts3) as ydl:
+        with yt_dlp.YoutubeDL(ydl_opts2) as ydl:
             meta = ydl.extract_info(url, download=True)
             input = SAVE_DIR+meta['id']+'--tmp.webm'
             output = SAVE_DIR+meta['id']+'.webm'
@@ -155,7 +115,7 @@ def dl_music(url:str):
 
 def playlist(url):
     try:
-        with yt_dlp.YoutubeDL(playlist_opt1) as ydl:
+        with yt_dlp.YoutubeDL(playlist_opt) as ydl:
             info_dict = ydl.extract_info(url, download=False)
             o = json.loads(json.dumps(info_dict, ensure_ascii=False))
         return o

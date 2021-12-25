@@ -7,7 +7,9 @@ RUN apt-get update
 RUN apt-get install -y \
     wget \
     xz-utils \
-    git
+    git \
+    gcc \
+    g++
 
 RUN cd /tmp && \
     wget https://github.com/yt-dlp/FFmpeg-Builds/releases/download/autobuild-2021-10-31-12-47/ffmpeg-n4.4.1-1-g0de5c9e2e4-linux64-gpl-4.4.tar.xz && \

@@ -1,4 +1,6 @@
 from discord.ext import commands  # Bot Commands Frameworkのインポート
+from discord.commands import slash_command, SlashCommandGroup
+import discord
 import requests
 # logを出すためのおまじない #
 from logging import getLogger, StreamHandler, DEBUG
@@ -41,22 +43,22 @@ class Message(commands.Cog):
             # await self.bot.process_commands(message)
 
     # 送ったコマンドを表示するだけ (クラスはselfが必須なため注意)
-    @commands.command()
-    async def test(self, ctx,*,arg):
+    @slash_command()
+    async def test(self, ctx: discord.ApplicationContext,*,arg):
         """動作チェックのオウム返し(複数指定化 v0.0.6)"""
-        await ctx.send(arg)
+        await ctx.respond(arg)
 
-    @commands.command()
-    async def check_ctx(self, ctx):
+    @slash_command()
+    async def check_ctx(self, ctx: discord.ApplicationContext):
         """動作チェックのオウム返し(複数指定化 v0.0.6)"""
-        data = ctx.channel.id
+        data = ctx.channel_id
         # チャンネルIDを取得
         channel = self.bot.get_channel(id = data)
-        await ctx.send(data)
+        await ctx.respond(data)
         await channel.send('チャンネルIDに送信しています')
 
-    @commands.command()
-    async def syosetu(self, ctx):
+    @slash_command()
+    async def syosetu(self, ctx: discord.ApplicationContext):
         """小説サイトのurlを表示するだけ"""
         S_url = [['小説家になろう', 'https://yomou.syosetu.com/rank/genretop/', ],
                  ['カクヨム', 'https://kakuyomu.jp/rankings/all/entire']]
@@ -65,17 +67,17 @@ class Message(commands.Cog):
         for i in S_url:
             tmp_list += '・'+ i[0]+'\n'+'--<'+i[1]+'>--'+'\n'
 
-        await ctx.send(tmp_list)
+        await ctx.respond(tmp_list)
 
-    @commands.command()
-    async def getip(self,ctx):
+    @slash_command()
+    async def getip(self,ctx: discord.ApplicationContext):
         """IPアドレスを取得"""
         headers = {'User-Agent': 'curl'}
         res = requests.get('https://ifconfig.io/', headers=headers)
         ip = str(res.text.rstrip('\n'))
         logger.debug(ip)
 
-        await ctx.send('`'+ip+'`')
+        await ctx.respond('`'+ip+'`')
 
 # Bot本体側からコグを読み込む際に呼び出される関数。
 def setup(bot):

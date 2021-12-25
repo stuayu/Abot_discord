@@ -1,5 +1,6 @@
 from discord.ext import commands  # Bot Commands Frameworkのインポート
 import discord
+from discord.commands import slash_command, SlashCommandGroup
 import modules.get_news as get_news
 
 # コグとして用いるクラスを定義。
@@ -12,11 +13,11 @@ class News(commands.Cog):
         self.bot = bot
 
     # コマンドの作成。コマンドはcommandデコレータで必ず修飾する。
-    # @commands.command()
-    # async def ping(self, ctx):
-    #    await ctx.send('pong!')
-    @commands.command()
-    async def anews(self, ctx):
+    # @slash_command()
+    # async def ping(self, ctx: discord.ApplicationContext):
+    #    await ctx.respond('pong!')
+    @slash_command()
+    async def anews(self, ctx: discord.ApplicationContext):
         """秋田魁新報社のトップページから記事を表示する"""
         embed = discord.Embed(title="秋田魁新報ニュースです。",
                               color=discord.Colour.red())
@@ -25,24 +26,24 @@ class News(commands.Cog):
             body[i] = body[i] + '\n' + url[i] + '\n----'
             embed.add_field(name='・'+title[i], value=body[i], inline=False)
 
-        await ctx.send(embed=embed)
+        await ctx.respond(embed=embed)
     # ヤフーのトップニュースを表示する
 
-    @commands.command()
-    async def ynews(self, ctx):
+    @slash_command()
+    async def ynews(self, ctx: discord.ApplicationContext):
         """Yahooから記事を表示する"""
         await ctx.message.delete()
-        await ctx.send("今日のYahooニュースです．")
+        await ctx.respond("今日のYahooニュースです．")
         # Yahooトップのトピック記事タイトルを取得
         news_data = get_news.get_yahoo_news()
         top_news = ""
         for news in (news_data):
             top_news += '・'+news[0]+'\n'+'--<'+news[1] + '>--' + '\n'
-        await ctx.send(top_news)
+        await ctx.respond(top_news)
 
     # NHKのトップニュース
-    @commands.command()
-    async def nnews(self, ctx):
+    @slash_command()
+    async def nnews(self, ctx: discord.ApplicationContext):
         """NHKニュースを表示する"""
         await ctx.message.delete()
         embed = discord.Embed(title="今日のNHKニュースです．",
@@ -59,7 +60,7 @@ class News(commands.Cog):
                     text_ += target + '\n'
             embed.add_field(name=title, value=text_, inline=False)
             text_ = ''
-        await ctx.send(embed=embed)
+        await ctx.respond(embed=embed)
 
 # Bot本体側からコグを読み込む際に呼び出される関数。
 

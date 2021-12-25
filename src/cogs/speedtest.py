@@ -1,5 +1,6 @@
 from discord.ext import commands  # Bot Commands Frameworkのインポート
 import discord
+from discord.commands import slash_command, SlashCommandGroup
 import speedtest as st
 
 # logを出すためのおまじない #
@@ -15,8 +16,8 @@ class Speedtest(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         
-    @commands.command(name='speedtest')
-    async def speed_test(self, ctx):
+    @slash_command(name='speedtest')
+    async def speed_test(self, ctx: discord.ApplicationContext):
         """Herokuのネットワーク速度を表示する"""
         servers = []
         stest = st.Speedtest()
@@ -33,7 +34,7 @@ class Speedtest(commands.Cog):
 
         message = '```ダウンロード:'+str(mbps_down_result) + \
             'Mbps\n'+'アップロード:'+str(mbps_up_result)+'Mbps```'
-        await ctx.send(message)
+        await ctx.respond(message)
 
 # Bot本体側からコグを読み込む際に呼び出される関数。
 def setup(bot):

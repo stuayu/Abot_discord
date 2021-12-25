@@ -12,7 +12,7 @@ logger.setLevel(DEBUG)
 logger.addHandler(handler)
 logger.propagate = False
 #####################################################
-STATUS_MESSAGE = "Abot v0.2.0"
+STATUS_MESSAGE = "Abot v0.5.0"
 #####################################################
 data = json.load(open('src/modules/settings.json', 'r'))
 TOKEN = data['token']
@@ -27,15 +27,15 @@ INITIAL_EXTENSIONS = [
 ]
 
 # prefixを修正する際にはここも直すこと
-prefix = ','
+#prefix = '/'
 
 # クラスの定義。ClientのサブクラスであるBotクラスを継承。
 class MyBot(commands.Bot):
 
     # MyBotのコンストラクタ。
-    def __init__(self,command_prefix,help_command):
+    def __init__(self):
         # スーパークラスのコンストラクタに値を渡して実行。
-        super().__init__(command_prefix,help_command)
+        super().__init__()
 
         # INITIAL_COGSに格納されている名前から、コグを読み込む。
         # エラーが発生した場合は、エラー内容を表示。
@@ -52,7 +52,7 @@ class MyBot(commands.Bot):
         logger.info(self.user.id)
         await bot.change_presence(activity=discord.Game(name=STATUS_MESSAGE, type=1))
         logger.info('-----')
-
+"""
 class JapaneseHelpCommand(commands.DefaultHelpCommand):
     def __init__(self):
         super().__init__()
@@ -65,8 +65,9 @@ class JapaneseHelpCommand(commands.DefaultHelpCommand):
                 '各カテゴリの説明: '+prefix+'help <カテゴリ名>\n'
 
         return data
+"""
 # MyBotのインスタンス化及び起動処理。
 if __name__ == '__main__':
     # command_prefixはコマンドの最初の文字として使うもの。
-    bot = MyBot(command_prefix=prefix,help_command=JapaneseHelpCommand())
+    bot = MyBot()
     bot.run(TOKEN)  # Botのトークン

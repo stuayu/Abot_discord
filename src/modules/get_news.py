@@ -11,7 +11,7 @@ def get_news(url):
     # ユーザーエージェントを指定
     ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '\
         'AppleWebKit/537.36 (KHTML, like Gecko) '\
-        'Chrome/92.0.4515.159 Safari/537.36 '
+        'Chrome/96.0.4664.110 Safari/537.36 '
 
     rest = requests.get(url, headers={'User-Agent': ua})
 
