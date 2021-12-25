@@ -12,7 +12,7 @@ logger.setLevel(DEBUG)
 logger.addHandler(handler)
 logger.propagate = False
 #####################################################
-STATUS_MESSAGE = "Abot v0.5.0"
+STATUS_MESSAGE = "Abot v0.5.1"
 #####################################################
 data = json.load(open('src/modules/settings.json', 'r'))
 TOKEN = data['token']

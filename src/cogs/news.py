@@ -32,7 +32,6 @@ class News(commands.Cog):
     @slash_command()
     async def ynews(self, ctx: discord.ApplicationContext):
         """Yahooから記事を表示する"""
-        await ctx.message.delete()
         await ctx.respond("今日のYahooニュースです．")
         # Yahooトップのトピック記事タイトルを取得
         news_data = get_news.get_yahoo_news()
@@ -45,7 +44,6 @@ class News(commands.Cog):
     @slash_command()
     async def nnews(self, ctx: discord.ApplicationContext):
         """NHKニュースを表示する"""
-        await ctx.message.delete()
         embed = discord.Embed(title="今日のNHKニュースです．",
                               color=discord.Colour.red())
         # NHKトップのトピック記事を取得
