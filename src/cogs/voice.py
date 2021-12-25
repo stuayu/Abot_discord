@@ -142,8 +142,8 @@ class Voice(commands.Cog):
 
     @vmusic.command()
     async def a_loop(self,ctx: discord.ApplicationContext,
-        ck_list: Option(input_type=str, description='再生リストを指定してください', choices=["all","yoasobi","first_take","porno","anime","a_2021_summer","ikimono","yorushika"], default = "all"),
-        rand_ck: Option(input_type=str , description= "再生の方法を選択してください", choices=["True","False"],default="True")):
+        ck_list: Option(str, description='再生リストを指定してください', choices=["all","yoasobi","first_take","porno","anime","a_2021_summer","ikimono","yorushika"], default="all"),
+        rand_ck: Option(str, description='再生の方法を選択してください', choices=["True","False"], default="True")):
         """プレイリスト(a_loop)をランダムに再生する
 
         Args:
