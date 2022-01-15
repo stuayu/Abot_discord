@@ -1,5 +1,0 @@
-discord.py[voice]
-bs4
-requests
-youtube_dl
-speedtest-cli

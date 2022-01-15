@@ -12,7 +12,7 @@ logger.setLevel(DEBUG)
 logger.addHandler(handler)
 logger.propagate = False
 #####################################################
-STATUS_MESSAGE = "Abot v0.5.2"
+STATUS_MESSAGE = "Abot v0.6.0"
 #####################################################
 data = json.load(open('src/modules/settings.json', 'r'))
 TOKEN = data['token']
@@ -23,7 +23,8 @@ INITIAL_EXTENSIONS = [
     'cogs.voice',
     'cogs.syoboi',
     'cogs.speedtest',
-    'cogs.gif'
+    'cogs.gif',
+    #'cogs.recserver'
 ]
 
 # prefixを修正する際にはここも直すこと
@@ -52,20 +53,7 @@ class MyBot(commands.Bot):
         logger.info(self.user.id)
         await bot.change_presence(activity=discord.Game(name=STATUS_MESSAGE, type=1))
         logger.info('-----')
-"""
-class JapaneseHelpCommand(commands.DefaultHelpCommand):
-    def __init__(self):
-        super().__init__()
-        self.commands_heading = "コマンド:"
-        self.no_category = "その他"
-        self.command_attrs["help"] = "コマンド一覧と簡単な説明を表示 (v0.0.7:大幅改定)"
 
-    def get_ending_note(self):
-        data = '各コマンドの説明: '+prefix+'help <コマンド名>\n' \
-                '各カテゴリの説明: '+prefix+'help <カテゴリ名>\n'
-
-        return data
-"""
 # MyBotのインスタンス化及び起動処理。
 if __name__ == '__main__':
     # command_prefixはコマンドの最初の文字として使うもの。

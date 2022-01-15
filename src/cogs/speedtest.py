@@ -19,6 +19,7 @@ class Speedtest(commands.Cog):
     @slash_command(name='speedtest')
     async def speed_test(self, ctx: discord.ApplicationContext):
         """Herokuのネットワーク速度を表示する"""
+        await ctx.defer()
         servers = []
         stest = st.Speedtest()
         stest.get_servers(servers)

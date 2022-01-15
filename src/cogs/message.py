@@ -1,5 +1,5 @@
 from discord.ext import commands  # Bot Commands Frameworkのインポート
-from discord.commands import slash_command, SlashCommandGroup
+from discord.commands import slash_command, SlashCommandGroup, Option
 import discord
 import requests
 # logを出すためのおまじない #
@@ -44,22 +44,23 @@ class Message(commands.Cog):
 
     # 送ったコマンドを表示するだけ (クラスはselfが必須なため注意)
     @slash_command()
-    async def test(self, ctx: discord.ApplicationContext,*,arg):
+    async def test(self, ctx: discord.ApplicationContext, arg: Option(str,description='文字を入力してください')):
         """動作チェックのオウム返し(複数指定化 v0.0.6)"""
+        await ctx.defer()
         await ctx.respond(arg)
 
     @slash_command()
     async def check_ctx(self, ctx: discord.ApplicationContext):
-        """動作チェックのオウム返し(複数指定化 v0.0.6)"""
+        """チャンネルID取得"""
+        await ctx.defer()
         data = ctx.channel_id
         # チャンネルIDを取得
-        channel = self.bot.get_channel(id = data)
-        await ctx.respond(data)
-        await channel.send('チャンネルIDに送信しています')
+        await ctx.respond(str(data))
 
     @slash_command()
     async def syosetu(self, ctx: discord.ApplicationContext):
         """小説サイトのurlを表示するだけ"""
+        await ctx.defer()
         S_url = [['小説家になろう', 'https://yomou.syosetu.com/rank/genretop/', ],
                  ['カクヨム', 'https://kakuyomu.jp/rankings/all/entire']]
 
@@ -72,12 +73,19 @@ class Message(commands.Cog):
     @slash_command()
     async def getip(self,ctx: discord.ApplicationContext):
         """IPアドレスを取得"""
+        await ctx.defer()
         headers = {'User-Agent': 'curl'}
         res = requests.get('https://ifconfig.io/', headers=headers)
         ip = str(res.text.rstrip('\n'))
         logger.debug(ip)
 
         await ctx.respond('`'+ip+'`')
+
+    @slash_command()
+    async def release_note(self,ctx: discord.ApplicationContext):
+        """リリースノート"""
+        await ctx.defer()
+        await ctx.respond('リリースノート:\nhttps://github.com/stuayu/Abot_discord/tree/main/RELEASE_NOTE.md')
 
 # Bot本体側からコグを読み込む際に呼び出される関数。
 def setup(bot):
