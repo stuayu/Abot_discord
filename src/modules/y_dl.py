@@ -122,7 +122,6 @@ def playlist(url):
     except Exception as e:
         logger.debug(e.args[0])
         return e.args[0]
-        pass
 
 def ffmpeg_norm(source:str,output:str):
     """ffmpegを利用したノーマライズ"""
@@ -135,6 +134,13 @@ def ffmpeg_norm(source:str,output:str):
     logger.debug(proc.stderr.decode("utf8"))
 
     return 0
+
+def song_info(url:str):
+    """楽曲情報データを返す"""
+    with yt_dlp.YoutubeDL(ydl_opts1) as ydl:
+        song_data = ydl.extract_info(url, download=False)
+    o = json.loads(json.dumps(song_data, ensure_ascii=False))
+    return o
 
 if __name__ == '__main__':
     #meta = dl_music('https://www.youtube.com/watch?v=hH5d3riIHN4')

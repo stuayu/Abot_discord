@@ -19,7 +19,10 @@ class Gif(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @slash_command(name='ha')
+    #### スラッシュコマンドグループ定義エリア ####
+    gif = SlashCommandGroup("gif", "gif関連")
+
+    @gif.command(name='ha')
     async def meidora1(self, ctx: discord.ApplicationContext):
         """メイドラゴンGIF"""
         await ctx.defer()
@@ -30,7 +33,7 @@ class Gif(commands.Cog):
 
         await ctx.respond(file=discord.File(SAVE_DIR+filename,filename))
     
-    @slash_command(name='thx')
+    @gif.command(name='thx')
     async def meidora2(self, ctx: discord.ApplicationContext):
         """メイドラゴンGIF"""
         await ctx.defer()
@@ -40,7 +43,7 @@ class Gif(commands.Cog):
 
         await ctx.respond(file=discord.File(SAVE_DIR+filename,filename))
 
-    @slash_command(name='onegai')
+    @gif.command(name='onegai')
     async def meidora3(self, ctx: discord.ApplicationContext):
         """メイドラゴンGIF"""
         await ctx.defer()
@@ -51,7 +54,7 @@ class Gif(commands.Cog):
         await ctx.respond(file=discord.File(SAVE_DIR+filename,filename))
 
     
-    @slash_command(name='gyu')
+    @gif.command(name='gyu')
     async def meidora4(self, ctx: discord.ApplicationContext):
         """メイドラゴンGIF"""
         await ctx.defer()
@@ -61,7 +64,7 @@ class Gif(commands.Cog):
 
         await ctx.respond(file=discord.File(SAVE_DIR+filename,filename))
     
-    @slash_command(name='maken')
+    @gif.command(name='maken')
     async def meidora5(self, ctx: discord.ApplicationContext):
         """メイドラゴンGIF"""
         await ctx.defer()
@@ -71,7 +74,7 @@ class Gif(commands.Cog):
 
         await ctx.respond(file=discord.File(SAVE_DIR+filename,filename))
 
-    @slash_command(name='bohe')
+    @gif.command(name='bohe')
     async def meidora6(self, ctx: discord.ApplicationContext):
         """メイドラゴンGIF"""
         await ctx.defer()
@@ -81,7 +84,7 @@ class Gif(commands.Cog):
         
         await ctx.respond(file=discord.File(SAVE_DIR+filename,filename))
 
-    @slash_command(name='hello')
+    @gif.command(name='hello')
     async def meidora7(self, ctx: discord.ApplicationContext):
         """メイドラゴンGIF"""
         await ctx.defer()

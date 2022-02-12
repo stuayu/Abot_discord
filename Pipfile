@@ -8,7 +8,7 @@ bs4 = "*"
 requests = "*"
 speedtest-cli = "*"
 yt-dlp = {git = "https://github.com/yt-dlp/yt-dlp"}
-py-cord = {extras = ["speed", "voice"], git = "https://github.com/Pycord-Development/pycord.git"}
+py-cord = {extras = ["speed", "voice"], ref = "master", git = "https://github.com/Pycord-Development/pycord.git"}
 pynacl = "*"
 aiodns = "*"
 brotli = "*"
