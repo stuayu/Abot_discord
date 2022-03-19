@@ -1,8 +1,6 @@
 import requests
 import xml.etree.ElementTree as ET
 import re
-#import discord
-#import asyncio
 from datetime import datetime, timedelta, timezone
 
 # タイムゾーンの生成

@@ -4,17 +4,9 @@ from discord.ext import commands  # Bot Commands Frameworkのインポート
 from discord.commands import slash_command, SlashCommandGroup, Option
 import modules.request as dl
 import discord
-# logを出すためのおまじない #
-from logging import getLogger, StreamHandler, DEBUG ,INFO
 import json
 from modules.settings import login_id,login_pass,AKITA,FUKUSHIMA
-
-logger = getLogger(__name__)
-handler = StreamHandler()
-handler.setLevel(INFO)
-logger.setLevel(INFO)
-logger.addHandler(handler)
-logger.propagate = False
+from header.logger import *
 
 
 class RECSERVER(commands.Cog):
@@ -22,8 +14,8 @@ class RECSERVER(commands.Cog):
         self.bot = bot
         self.__akita_channel = RECSERVER.load_channel(url=AKITA)
         self.__fukushima_channel = RECSERVER.load_channel(url=FUKUSHIMA)
-        logger.debug('Akita:\n'+str(self.__akita_channel))
-        logger.debug('fukushima:\n'+str(self.__fukushima_channel))
+        #logger.debug('Akita:\n'+str(self.__akita_channel))
+        #logger.debug('fukushima:\n'+str(self.__fukushima_channel))
 
     def login(url: str) -> str:
         payload = dict(username=login_id, password=login_pass)

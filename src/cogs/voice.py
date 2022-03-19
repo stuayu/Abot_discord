@@ -1,4 +1,4 @@
-from logging import getLogger, StreamHandler, DEBUG, INFO
+from http.client import HTTPException
 import random
 import discord
 from discord.errors import ClientException
@@ -14,6 +14,7 @@ import queue
 import asyncio
 from modules.settings import AKITA_STREAM,AKITA_EPG_REALTIME,FUKUSHIMA_STREAM,FUKUSHIMA_EPG_REALTIME
 import requests
+from header.logger import *
 
 SAVE_DIR = '/tmp/discordbot/music/'
 
@@ -36,13 +37,7 @@ CHANNEL_AKITA = \
         '8': '3246718456',
     }
 
-# logを出すためのおまじない #
-logger = getLogger(__name__)
-handler = StreamHandler()
-handler.setLevel(INFO)
-logger.setLevel(INFO)
-logger.addHandler(handler)
-logger.propagate = False
+
 
 
 class Voice(commands.Cog):
@@ -97,9 +92,8 @@ class Voice(commands.Cog):
                     try:
                         embed.description = _text
                         await send_massage.edit(embed=embed)
-                        # await ctx.delete()
                         return
-                    except:
+                    except HTTPException:
                         del self.__channel_embed_list[i]
                         embed = discord.Embed(
                             color=discord.Colour.red(), description=_text)
@@ -316,9 +310,9 @@ class Voice(commands.Cog):
         use_play = await ck_data(ck_list)
         max = len(use_play)-1
         while True:
-            logger.debug('ループ開始')
-            logger.debug('playing:'+str(ctx.voice_client.is_playing()) +
-                         '\npaused:'+str(ctx.voice_client.is_paused()))
+            #logger.debug('ループ開始')
+            #logger.debug('playing:'+str(ctx.voice_client.is_playing()) +
+            #             '\npaused:'+str(ctx.voice_client.is_paused()))
             if ctx.voice_client.is_playing() or ctx.voice_client.is_paused():
                 await asyncio.sleep(1)
             elif not ctx.voice_client.is_playing() and self.__loop == False:

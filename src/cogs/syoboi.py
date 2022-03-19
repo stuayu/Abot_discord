@@ -4,14 +4,7 @@ from discord.commands import slash_command, SlashCommandGroup, Option
 import modules.syoboical as syobocal
 import asyncio
 import time
-# logを出すためのおまじない #
-from logging import getLogger, StreamHandler, DEBUG
-logger = getLogger(__name__)
-handler = StreamHandler()
-handler.setLevel(DEBUG)
-logger.setLevel(DEBUG)
-logger.addHandler(handler)
-logger.propagate = False
+from header.logger import *
 
 # コグとして用いるクラスを定義。
 class Syoboi(commands.Cog):

@@ -1,8 +1,12 @@
 {
     "token": "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-    "short_token": "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+    "short_token": "XXXXXXXXXXXXXXXXXXXX",
     "rec_server_id": "XXXXXXXXXXXXX",
-    "rec_server_pass": "XXXXXXXXXXXXXX",
-    "akita": "XXXXXXXXXXXXXXXXXXXX",
-    "fukushima": "XXXXXXXXXXXXXXXXXXXX"
+    "rec_server_pass": "XXXXXXXXXXXXX",
+    "akita": "http://localhost:8888",
+    "fukushima": "http://localhost:8888",
+    "channel_id": [
+        00000000000000,
+        00000000000000
+    ]
 }

@@ -8,6 +8,7 @@ login_id = setting['rec_server_id']
 login_pass = setting['rec_server_pass']
 TOKEN = setting['token']
 short_token = setting['short_token']
+channel_list:list = setting['channel_id']
 
 AKITA_STREAM = AKITA+'/api/streams/live/'
 

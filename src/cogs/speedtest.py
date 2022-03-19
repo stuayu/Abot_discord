@@ -2,15 +2,7 @@ from discord.ext import commands  # Bot Commands Frameworkのインポート
 import discord
 from discord.commands import slash_command, SlashCommandGroup
 import speedtest as st
-
-# logを出すためのおまじない #
-from logging import getLogger, StreamHandler, DEBUG
-logger = getLogger(__name__)
-handler = StreamHandler()
-handler.setLevel(DEBUG)
-logger.setLevel(DEBUG)
-logger.addHandler(handler)
-logger.propagate = False
+from header.logger import *
 
 class Speedtest(commands.Cog):
     def __init__(self, bot):

@@ -1,18 +1,12 @@
 import discord
 import traceback  # エラー表示のためにインポート
 from discord.ext import commands
-from modules.settings import TOKEN
+from modules.settings import TOKEN,channel_list
+from modules.earthquake import main
+from header.logger import *
 
-########### logを出すためのおまじない ###############
-from logging import getLogger, StreamHandler, DEBUG
-logger = getLogger(__name__)
-handler = StreamHandler()
-handler.setLevel(DEBUG)
-logger.setLevel(DEBUG)
-logger.addHandler(handler)
-logger.propagate = False
 #####################################################
-STATUS_MESSAGE = "Abot v0.9.0"
+STATUS_MESSAGE = "Abot v0.9.1"
 #####################################################
 # 読み込むコグの名前を格納しておく。
 INITIAL_EXTENSIONS = [
@@ -22,7 +16,8 @@ INITIAL_EXTENSIONS = [
     'cogs.syoboi',
     'cogs.speedtest',
     'cogs.gif',
-    'cogs.recserver'
+    'cogs.recserver',
+    'cogs.earth'
 ]
 
 # prefixを修正する際にはここも直すこと
@@ -56,6 +51,13 @@ class MyBot(commands.Bot):
         else:
             await bot.change_presence(activity=discord.Game(name=STATUS_MESSAGE, type=1))
         logger.info('-----')
+        while True:
+            data = await main()
+            if data != None:
+                for i in channel_list:
+                    channel = bot.get_channel(i)
+                    await channel.send(embed=data)
+
 
 # MyBotのインスタンス化及び起動処理。
 if __name__ == '__main__':

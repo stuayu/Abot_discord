@@ -2,6 +2,7 @@ from discord.ext import commands  # Bot Commands Frameworkのインポート
 import discord
 from discord.commands import slash_command, SlashCommandGroup
 import modules.get_news as get_news
+from header.logger import *
 
 # コグとして用いるクラスを定義。
 

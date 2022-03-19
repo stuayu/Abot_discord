@@ -6,17 +6,9 @@ from multiprocessing import Process
 import yt_dlp
 import json
 import subprocess as sp
+from header.logger import *
 
 SAVE_DIR = '/tmp/discordbot/music/'
-# logを出すためのおまじない #
-from logging import getLogger, StreamHandler, DEBUG
-logger = getLogger(__name__)
-handler = StreamHandler()
-handler.setLevel(DEBUG)
-logger.setLevel(DEBUG)
-logger.addHandler(handler)
-logger.propagate = False
-
 proxy_ip_list = ['']
 
 proxy_ip = proxy_ip_list[0]
