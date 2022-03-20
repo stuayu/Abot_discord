@@ -34,7 +34,7 @@ async def main():
     logger.info('title: %s',title)
     logger.info('description: %s',description)
     if title != None:
-        return create_embed(title,description,code)
+        return await create_embed(title,description,code)
 
 async def create_embed(title:str,description:str,code:int):
     object_embed = discord.Embed(title=title,description=description,color=discord.Colour.red())
@@ -117,8 +117,7 @@ async def earthquake_information(data: dict):
 
     # 本文作成(震度4未満であれば終了)
     title = '地震が発生しました'
-    description = title + '\n\n' \
-        + '発生時刻:' + time.strftime('%Y年%m月%d日 %H:%M:%S') + '\n' \
+    description = '発生時刻:' + time.strftime('%Y年%m月%d日 %H:%M:%S') + '\n' \
         + '最大震度:' + await select_scale(maxscale) + '\n' \
         + '津波:' + await select_tsunami(tsunami) + '\n' \
         + '震源:' + name + '\n' \
@@ -126,8 +125,9 @@ async def earthquake_information(data: dict):
         + 'マグニチュード:' + str(magnitude) + '\n' \
         + '各地の地震情報:' + '\n' + await analysis_area(data)
 
-    #if maxscale < 40:
-    #    return None,None
+    # 震度3以上を通知
+    if maxscale < 30:
+        return None,None
 
     logger.info(description)
 

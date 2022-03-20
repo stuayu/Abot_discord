@@ -6,7 +6,7 @@ from modules.earthquake import main
 from header.logger import *
 
 #####################################################
-STATUS_MESSAGE = "Abot v0.9.1"
+STATUS_MESSAGE = "Abot v0.9.2"
 #####################################################
 # 読み込むコグの名前を格納しておく。
 INITIAL_EXTENSIONS = [
@@ -16,8 +16,7 @@ INITIAL_EXTENSIONS = [
     'cogs.syoboi',
     'cogs.speedtest',
     'cogs.gif',
-    'cogs.recserver',
-    'cogs.earth'
+    'cogs.recserver'
 ]
 
 # prefixを修正する際にはここも直すこと
