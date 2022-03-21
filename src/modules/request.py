@@ -35,5 +35,3 @@ def dl_image(url, name: str):
     chk = save_image(name, r.content)
     logger.debug('実行結果' + str(chk))
     return 0
-
-    
