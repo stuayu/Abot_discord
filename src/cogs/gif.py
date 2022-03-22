@@ -24,7 +24,7 @@ class Gif(commands.Cog):
     async def meidora_all(ctx: discord.ApplicationContext, filename: str):
         await ctx.defer()
         dl.dl_image(await get_meidra_gif(filename), filename+EXT_GIF)
-        await ctx.respond(file=discord.File(SAVE_DIR+filename, filename+EXT_GIF))
+        await ctx.respond(file=discord.File(SAVE_DIR+filename+EXT_GIF, filename+EXT_GIF))
 
     @gif.command(name='ha')
     async def meidora1(self, ctx: discord.ApplicationContext):
