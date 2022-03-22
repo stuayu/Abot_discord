@@ -5,14 +5,6 @@ import datetime
 from header.logger import *
 # https://www.p2pquake.net/json_api_v2/#/P2P%E5%9C%B0%E9%9C%87%E6%83%85%E5%A0%B1%20API/get_history
 
-
-
-# 地震発生時刻の保存(一時的)
-#earthquake_time = []
-# 緊急地震速報のID
-#emergency_earthquake_id = [(str, str)]
-
-
 async def main():
     url = "wss://api.p2pquake.net/v2/ws"
     ws = await websockets.connect(url)
@@ -44,6 +36,7 @@ async def create_embed(title:str,description:str,code:int):
 
     if code != 554:
         return object_embed
+
 
 #---------------------------------------------------------- 地震情報
 async def analysis_earth(data):
@@ -122,6 +115,7 @@ async def earthquake_information(data: dict):
 
     return title,description
 
+
 async def analysis_area(data):
     """地震の大きさごとに地域をまとめる"""
     scale = {}
@@ -155,15 +149,6 @@ async def analysis_area(data):
     return description
 
 
-async def check_warning(data: str):
-    """津波情報の種類"""
-    return {
-        'MajorWarning':'大津波警報(MajorWarning)',
-        'Warning':'津波警報(Warning)',
-        'Watch':'津波注意報(Watch)',
-    }.get(data, '不明')
-
-
 async def tsunami_forecast(data):
     """津波情報を埋め込みメッセージ用に変換"""
     title = '津波に関する情報'
@@ -182,9 +167,17 @@ async def tsunami_forecast(data):
     return title,description
 
 
+async def check_warning(data: str):
+    """津波情報の種類"""
+    return {
+        'MajorWarning':'大津波警報(MajorWarning)',
+        'Warning':'津波警報(Warning)',
+        'Watch':'津波注意報(Watch)',
+    }.get(data, '不明')
+
+
 async def Emergency_Earthquake_Report():
     """緊急地震速報を埋め込みメッセージ用に変換"""
-    # id,timeを保存
     description = '緊急地震速報が発表されました。強い地震に注意してください。'
     title = '緊急地震速報'
     return title,description

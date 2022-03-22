@@ -79,6 +79,12 @@ class Message(commands.Cog):
         """リリースノート"""
         await ctx.defer()
         await ctx.respond('リリースノート:\nhttps://github.com/stuayu/Abot_discord/tree/main/RELEASE_NOTE.md')
+    
+    @slash_command()
+    async def help(self,ctx: discord.ApplicationContext):
+        """ヘルプ"""
+        await ctx.defer()
+        await ctx.respond('ヘルプページ:\nhttps://github.com/stuayu/Abot_discord/tree/main/help.md')
 
 # Bot本体側からコグを読み込む際に呼び出される関数。
 def setup(bot):

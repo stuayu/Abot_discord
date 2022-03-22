@@ -237,7 +237,7 @@ class Voice(commands.Cog):
     async def play(self,
                    ctx: discord.ApplicationContext,
                    url: Option(str, description="再生したいURLを入力してください", required=False),
-                   region: Option(str, description='地域選択', choices=['秋田', '福島'], required=False),
+                   region: Option(str, description='地域選択', choices=['福島', '秋田'], required=False),
                    channel: Option(str, description='チャンネル番号を入力', choices=['1', '2', '4', '5', '6', '8'], required=False),
                    ):
         """youtube-dlpに対応したサイトから音楽を再生 v_music URL"""

@@ -15,9 +15,9 @@ class Syoboi(commands.Cog):
 
     # 送ったコマンドを表示するだけ (クラスはselfが必須なため注意)
     @slash_command()
-    async def a_prog(self, ctx: discord.ApplicationContext, arg: Option(str, description='何日後の予定かを数値で入力', choices=['0','1','2','3','4','5','6','7'],default='0')):
+    async def anime_syoboical(self, ctx: discord.ApplicationContext, date: Option(str, description='何日後の予定かを数値で入力', choices=['0','1','2','3','4','5','6','7'],default='0')):
         """しょぼいカレンダーからアニメの放送予定を取得 引数:何日後の予定かを数値で入力 (defalt:0)"""
-        data = await syobocal.anime_prog(arg)
+        data = await syobocal.anime_prog(date)
         logger.debug(data)
         embed = discord.Embed(title="アニメの放送予定一覧です",
                               color=discord.Colour.red())

@@ -56,7 +56,7 @@ class RECSERVER(commands.Cog):
                           ctx: discord.ApplicationContext,
                           search: Option(str, description='検索ワードを入力してください(正規表現が使えます)', required=True),
                           channel: Option(str, description='放送波種別を選択してください', choices=['All', 'GR', 'BS', 'CS'], default='All', required=False),
-                          region: Option(str, description='リージョンを選択してください', choices=['秋田', '福島'], default='福島', required=False),
+                          region: Option(str, description='リージョンを選択してください', choices=['福島', '秋田'], default='福島', required=False),
                           free: Option(str, description='無料番組のみを検索する', choices=['True', 'False'], default='True', required=False),
                           ):
         """EPGStationから番組検索"""
