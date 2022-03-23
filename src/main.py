@@ -6,7 +6,7 @@ from modules.earthquake import main
 from header.logger import *
 
 #####################################################
-STATUS_MESSAGE = "Abot v0.9.3"
+STATUS_MESSAGE = "Abot v0.9.4"
 #####################################################
 # 読み込むコグの名前を格納しておく。
 INITIAL_EXTENSIONS = [
