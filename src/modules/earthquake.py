@@ -149,7 +149,7 @@ async def analysis_area(data):
     for i in scale.keys():
         # iにはscale(int)が入る
         if i < 30: # 震度2以下は表示しない
-            return
+            continue
         description += scale_info.get(i, '') + ': ' + scale.get(i, '') + '\n'
 
     return description
