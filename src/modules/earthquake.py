@@ -22,7 +22,7 @@ async def main():
     elif code == 554:
         title,description = await Emergency_Earthquake_Report()
     else:
-        title,description = None,None
+        return None
 
     logger.info('title: %s',title)
     logger.info('description: %s',description)
@@ -113,8 +113,8 @@ async def earthquake_information(data: dict):
         + 'マグニチュード:' + str(magnitude) + '\n' \
         + '各地の地震情報:' + '\n' + await analysis_area(data)
 
-    # 震度3以上を通知
-    if maxscale < 30:
+    # 最大震度3以上かつ最大震度-1(不明)の場合は通知する
+    if maxscale < 30 and maxscale > 0:
         return None,None
 
     logger.info(description)
