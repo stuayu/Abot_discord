@@ -1,5 +1,9 @@
-import json
-setting = json.load(open('src/modules/settings.json', 'r'))
+import json,re
+
+with open('src/modules/settings.json', 'r', encoding='utf-8') as f:
+    text = f.read()
+re_text = re.sub(r'/\*[\s\S]*?\*/', '', text) # コメント付きJSONを読み込むため
+setting = json.loads(re_text)
 
 ######### 設定ファイルからデータをロード ##########
 AKITA = setting['akita']

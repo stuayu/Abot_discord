@@ -30,12 +30,15 @@
 
 - 録画サーバ関連
     ```
-    /prog_search search channel region free -> search: 検索ワード(正規表現可)、channel: All,GR,BS,CS、region: 福島,秋田、free: True,False
+    /prog_search search channel region free ->   
+        search: 検索ワード(正規表現可)、channel: All,GR,BS,CS、
+        region: 福島,秋田、free: True,False
     ```
 
 - アニメ予定の表示
     ```
-    /anime_syoboical date -> 指定日後のアニメの放送予定をしょぼいカレンダーから取得(当日は0を入力)
+    /anime_syoboical date -> 
+        指定日後のアニメの放送予定をしょぼいカレンダーから取得(当日は0を入力)
     ```
 - ボイスチャット用
     ```
@@ -54,4 +57,4 @@
     /vmusic qck         -> キューの確認
     /vmusic qcr         -> キューの削除 
     ```
-    [a_loopの楽曲一覧](./src/playlist/)
+    [a_loopの楽曲一覧](https://github.com/stuayu/Abot_discord/tree/main/src/playlist)

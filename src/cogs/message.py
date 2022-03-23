@@ -3,6 +3,7 @@ from discord.commands import slash_command, SlashCommandGroup, Option
 import discord
 import requests
 from header.logger import *
+from main import STATUS_MESSAGE
 
 SAVE_DIR = '/tmp/discordbot/img/'
 # コグとして用いるクラスを定義。
@@ -84,7 +85,19 @@ class Message(commands.Cog):
     async def help(self,ctx: discord.ApplicationContext):
         """ヘルプ"""
         await ctx.defer()
-        await ctx.respond('ヘルプページ:\nhttps://github.com/stuayu/Abot_discord/tree/main/help.md')
+        with open('help.md','r',encoding='utf-8') as f:
+            data = f.read()
+        help_object = discord.Embed(
+            title='Abotのヘルプページ Ver.' + STATUS_MESSAGE.split()[1],
+            #description=data + '\n\n [ヘルプドキュメント](https://github.com/stuayu/Abot_discord/tree/main/help.md)',
+            color=discord.Colour.red()
+        )
+        for description in data.split('- '):
+            if '#' in description:
+                pass
+            else:
+                help_object.add_field(name=description.split('\n',1)[0],value=description.split('\n',1)[1],inline=False)
+        await ctx.respond(embed=help_object)
 
 # Bot本体側からコグを読み込む際に呼び出される関数。
 def setup(bot):

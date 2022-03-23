@@ -7,8 +7,9 @@ from header.logger import *
 
 async def main():
     url = "wss://api.p2pquake.net/v2/ws"
-    ws = await websockets.connect(url)
-    res: dict = json.loads(await ws.recv())
+    async with websockets.connect(url) as websocket:
+        recv = await websocket.recv()
+    res: dict = json.loads(recv)
     code = res['code']
     logger.info('code: '+str(code))
     logger.info('id: '+str(res['_id']))
@@ -37,6 +38,7 @@ async def create_embed(title:str,description:str,code:int):
     if code != 554:
         return object_embed
 
+    return object_embed
 
 #---------------------------------------------------------- 地震情報
 async def analysis_earth(data):
@@ -57,7 +59,9 @@ async def analysis_earth(data):
 
     if depth == -1:
         depth = '調査中'
-    if name == None:
+    else:
+        depth = str(depth) + 'km'
+    if name == '':
         name = '調査中'
 
     return depth, magnitude, name, maxscale, time, tsunami
@@ -97,13 +101,13 @@ async def earthquake_information(data: dict):
     # 地震情報の解析
     (depth, magnitude, name, maxscale, time, tsunami) = await analysis_earth(data)
 
-    # 本文作成(震度4未満であれば終了)
+    # 本文作成(震度2以下であれば終了)
     title = '地震が発生しました'
     description = '発生時刻:' + time.strftime('%Y年%m月%d日 %H:%M:%S') + '\n' \
         + '最大震度:' + await select_scale(maxscale) + '\n' \
         + '津波:' + await select_tsunami(tsunami) + '\n' \
         + '震源:' + name + '\n' \
-        + '震源の深さ:' + str(depth)+'km\n' \
+        + '震源の深さ:' + depth +'\n' \
         + 'マグニチュード:' + str(magnitude) + '\n' \
         + '各地の地震情報:' + '\n' + await analysis_area(data)
 
@@ -144,6 +148,8 @@ async def analysis_area(data):
     description = ''
     for i in scale.keys():
         # iにはscale(int)が入る
+        if i < 30: # 震度2以下は表示しない
+            return
         description += scale_info.get(i, '') + ': ' + scale.get(i, '') + '\n'
 
     return description
