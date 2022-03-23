@@ -63,14 +63,16 @@ async def analysis_earth(data):
         depth = str(depth) + 'km'
     if name == '':
         name = '調査中'
+    if magnitude == -1:
+        magnitude = '調査中'
 
     return depth, magnitude, name, maxscale, time, tsunami
 
 
 async def select_scale(maxscale: int):
-    """地震情報の種類"""
+    """震度情報の種類"""
     return {
-        -1:'地震情報なし',
+        -1:'震度情報なし',
         10:'震度1',
         20:'震度2',
         30:'震度3',
@@ -81,7 +83,7 @@ async def select_scale(maxscale: int):
         55:'震度6弱',
         60:'震度6強',
         70:'震度7',
-    }.get(maxscale, '地震情報は定義されていません')
+    }.get(maxscale, '震度情報は定義されていません')
 
 
 async def select_tsunami(tsunami: str):
@@ -146,6 +148,7 @@ async def analysis_area(data):
             + point['pref'] + point['addr']+', '
 
     description = ''
+    scale = sorted(scale.items(), reverse=True) # キー(震度)の大きい順に並び替え
     for i in scale.keys():
         # iにはscale(int)が入る
         if i < 30: # 震度2以下は表示しない
