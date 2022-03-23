@@ -148,7 +148,7 @@ async def analysis_area(data):
             + point['pref'] + point['addr']+', '
 
     description = ''
-    scale = sorted(scale.items(), reverse=False) # キー(震度)の大きい順に並び替え
+    scale = sorted(scale.items(), reverse=True) # キー(震度)の大きい順に並び替え
     for i in scale.keys():
         # iにはscale(int)が入る
         if i < 30: # 震度2以下は表示しない
