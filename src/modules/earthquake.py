@@ -5,6 +5,16 @@ import datetime
 from header.logger import *
 # https://www.p2pquake.net/json_api_v2/#/P2P%E5%9C%B0%E9%9C%87%E6%83%85%E5%A0%B1%20API/get_history
 
+# 各情報のIDを格納する データ構造の例
+# ID_LOGGER = {
+#   511: [
+#     ID,
+#     ID, ...
+#   ],
+#  552: [ ... ],
+# }
+ID_LOGGER = {}
+
 async def main():
     url = "wss://api.p2pquake.net/v2/ws"
     async with websockets.connect(url) as websocket:
@@ -14,6 +24,15 @@ async def main():
     logger.info('code: '+str(code))
     logger.info('id: '+str(res['_id']))
     logger.debug(str(res))
+
+    # 既に同じIDの情報を処理したかの判定
+    if res['id'] in ID_LOGGER.get(res['code'], []):
+        return None
+    else:
+        if not ID_LOGGER.get(res['code'], False):
+            ID_LOGGER[res['code']] == []
+        ID_LOGGER[res['code']].append(res['id'])
+
     # 551(地震情報)、552(津波予報)、554(緊急地震速報 発表検出)、555(各地域ピア数)、561(地震感知情報)、9611(地震感知情報 解析結果)
     if code == 551:
         title,description = await earthquake_information(res)
@@ -158,6 +177,7 @@ async def analysis_area(data):
     return description
 
 
+#---------------------------------------------------------- 津波情報
 async def tsunami_forecast(data):
     """津波情報を埋め込みメッセージ用に変換"""
     title = '津波に関する情報'
@@ -185,6 +205,7 @@ async def check_warning(data: str):
     }.get(data, '不明')
 
 
+#---------------------------------------------------------- 緊急地震速報
 async def Emergency_Earthquake_Report():
     """緊急地震速報を埋め込みメッセージ用に変換"""
     description = '緊急地震速報が発表されました。強い地震に注意してください。'
