@@ -26,12 +26,12 @@ async def main():
     logger.debug(str(res))
 
     # 既に同じIDの情報を処理したかの判定
-    if res['id'] in ID_LOGGER.get(res['code'], []):
+    if res['_id'] in ID_LOGGER.get(res['code'], []):
         return None
     else:
         if not ID_LOGGER.get(res['code'], False):
             ID_LOGGER[res['code']] == []
-        ID_LOGGER[res['code']].append(res['id'])
+        ID_LOGGER[res['code']].append(res['_id'])
 
     # 551(地震情報)、552(津波予報)、554(緊急地震速報 発表検出)、555(各地域ピア数)、561(地震感知情報)、9611(地震感知情報 解析結果)
     if code == 551:
