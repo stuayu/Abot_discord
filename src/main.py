@@ -50,12 +50,29 @@ class MyBot(commands.Bot):
         else:
             await bot.change_presence(activity=discord.Game(name=STATUS_MESSAGE, type=1))
         logger.info('-----')
+
+        # 送信済みの情報ID, メッセージIDを格納
+        # ID_LOGGER = {
+        #  "_id":[
+        #    "message_id",
+        #    "message_id", ...
+        #  ],
+        #  "_id":[], ...
+        # }
+        ID_LOGGER = {}
+
         while True:
-            data = await main()
+            data, _id = await main() # データ, 情報IDを受け取る
             if data != None:
-                for i in channel_list:
-                    channel = bot.get_channel(i)
-                    await channel.send(embed=data)
+                mes_id = [] # 一時的にメッセージIDを格納するリスト
+                if _id in ID_LOGGER:
+                    for i in ID_LOGGER.get(_id, []):
+                        mes_id.append(await i.edit(embed=data))  # 送信内容の編集
+                else:
+                    for i in channel_list:
+                        channel = bot.get_channel(i)
+                        mes_id.append(await channel.send(embed=data))
+                ID_LOGGER[_id] = mes_id # 送信済みのメッセージIDリストの更新
 
 
 # MyBotのインスタンス化及び起動処理。

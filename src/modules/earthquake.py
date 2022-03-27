@@ -5,15 +5,6 @@ import datetime
 from header.logger import *
 # https://www.p2pquake.net/json_api_v2/#/P2P%E5%9C%B0%E9%9C%87%E6%83%85%E5%A0%B1%20API/get_history
 
-# 各情報のIDを格納する データ構造の例
-# ID_LOGGER = {
-#   511: [
-#     ID,
-#     ID, ...
-#   ],
-#  552: [ ... ],
-# }
-ID_LOGGER = {}
 
 async def main():
     url = "wss://api.p2pquake.net/v2/ws"
@@ -25,13 +16,6 @@ async def main():
     logger.info('id: '+str(res['_id']))
     logger.debug(str(res))
 
-    # 既に同じIDの情報を処理したかの判定
-    if res['_id'] in ID_LOGGER.get(res['code'], []):
-        return None
-    else:
-        if not ID_LOGGER.get(res['code'], False):
-            ID_LOGGER[res['code']] == []
-        ID_LOGGER[res['code']].append(res['_id'])
 
     # 551(地震情報)、552(津波予報)、554(緊急地震速報 発表検出)、555(各地域ピア数)、561(地震感知情報)、9611(地震感知情報 解析結果)
     if code == 551:
@@ -46,7 +30,8 @@ async def main():
     logger.info('title: %s',title)
     logger.info('description: %s',description)
     if title != None:
-        return await create_embed(title,description,code)
+        res_emb = await create_embed(title,description,code)
+        return res_emb, str(res['_id']) # データ, 情報IDを返す
 
 async def create_embed(title:str,description:str,code:int):
     object_embed = discord.Embed(
