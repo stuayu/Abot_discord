@@ -5,7 +5,6 @@ import datetime
 from header.logger import *
 # https://www.p2pquake.net/json_api_v2/#/P2P%E5%9C%B0%E9%9C%87%E6%83%85%E5%A0%B1%20API/get_history
 
-
 async def main():
     url = "wss://api.p2pquake.net/v2/ws"
     async with websockets.connect(url) as websocket:
@@ -15,8 +14,6 @@ async def main():
     logger.info('code: '+str(code))
     logger.info('id: '+str(res['_id']))
     logger.debug(str(res))
-
-
     # 551(地震情報)、552(津波予報)、554(緊急地震速報 発表検出)、555(各地域ピア数)、561(地震感知情報)、9611(地震感知情報 解析結果)
     if code == 551:
         title,description = await earthquake_information(res)
