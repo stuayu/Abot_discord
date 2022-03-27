@@ -29,7 +29,8 @@ async def main():
     if title != None:
         res_emb = await create_embed(title,description,code)
         time = str(datetime.datetime.strptime(res['earthquake']['time'], '%Y/%m/%d %H:%M:%S').strftime('%Y%m%d%H%M%S'))
-        return res_emb, str(res['code'])+'_'+time # データ, 情報IDを返す
+        _id = str(res['code'])+'_'+time # --> ex: 551_202203280000
+        return res_emb, _id # データ, 情報IDを返す
 
 async def create_embed(title:str,description:str,code:int):
     object_embed = discord.Embed(
