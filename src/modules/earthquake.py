@@ -28,7 +28,8 @@ async def main():
     logger.info('description: %s',description)
     if title != None:
         res_emb = await create_embed(title,description,code)
-        return res_emb, str(res['_id']) # データ, 情報IDを返す
+        time = str(datetime.datetime.strptime(res['earthquake']['time'], '%Y/%m/%d %H:%M:%S').strftime('%Y%m%d%H%M%S'))
+        return res_emb, str(res['code'])+'_'+time # データ, 情報IDを返す
 
 async def create_embed(title:str,description:str,code:int):
     object_embed = discord.Embed(
