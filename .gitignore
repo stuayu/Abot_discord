@@ -2,6 +2,7 @@
 music/*
 cookies.txt
 src/modules/settings.json
+src/modules/text_*.md
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

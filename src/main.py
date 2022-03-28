@@ -1,12 +1,12 @@
 import discord
 import traceback  # エラー表示のためにインポート
 from discord.ext import commands
-from modules.settings import TOKEN,channel_list
-from modules.earthquake import main
+from modules.settings import TOKEN, channel_list
+from modules.earthquake import main, connect_ws, recv_ws
 from header.logger import *
 
 #####################################################
-STATUS_MESSAGE = "Abot v0.9.4"
+STATUS_MESSAGE = "Abot v0.9.5"
 #####################################################
 # 読み込むコグの名前を格納しておく。
 INITIAL_EXTENSIONS = [
@@ -23,6 +23,8 @@ INITIAL_EXTENSIONS = [
 #prefix = '/'
 
 # クラスの定義。ClientのサブクラスであるBotクラスを継承。
+
+
 class MyBot(commands.Bot):
 
     # MyBotのコンストラクタ。
@@ -61,10 +63,14 @@ class MyBot(commands.Bot):
         # }
         ID_LOGGER = {}
 
+        websocket = await connect_ws()  # websocketのコネクション開始
+
         while True:
-            data, _id = await main() # データ, 情報IDを受け取る
+            data_ws = await recv_ws(websocket)
+            data, _id = await main(data_ws)  # データ, 情報IDを受け取る
+
             if data != None:
-                mes_id = [] # 一時的にメッセージIDを格納するリスト
+                mes_id = []  # 一時的にメッセージIDを格納するリスト
                 if _id in ID_LOGGER:
                     for i in ID_LOGGER.get(_id, []):
                         mes_id.append(await i.edit(embed=data))  # 送信内容の編集
@@ -72,7 +78,7 @@ class MyBot(commands.Bot):
                     for i in channel_list:
                         channel = bot.get_channel(i)
                         mes_id.append(await channel.send(embed=data))
-                ID_LOGGER[_id] = mes_id # 送信済みのメッセージIDリストの更新
+                ID_LOGGER[_id] = mes_id  # 送信済みのメッセージIDリストの更新
 
 
 # MyBotのインスタンス化及び起動処理。
