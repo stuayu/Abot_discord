@@ -27,7 +27,10 @@ async def main():
     logger.info('title: %s',title)
     logger.info('description: %s',description)
     if title != None:
-        return await create_embed(title,description,code)
+        res_emb = await create_embed(title,description,code)
+        time = str(datetime.datetime.strptime(res['earthquake']['time'], '%Y/%m/%d %H:%M:%S').strftime('%Y%m%d%H%M%S'))
+        _id = str(res['code'])+'_'+time # --> ex: 551_202203280000
+        return res_emb, _id # データ, 情報IDを返す
 
 async def create_embed(title:str,description:str,code:int):
     object_embed = discord.Embed(
@@ -158,6 +161,7 @@ async def analysis_area(data):
     return description
 
 
+#---------------------------------------------------------- 津波情報
 async def tsunami_forecast(data):
     """津波情報を埋め込みメッセージ用に変換"""
     title = '津波に関する情報'
@@ -185,6 +189,7 @@ async def check_warning(data: str):
     }.get(data, '不明')
 
 
+#---------------------------------------------------------- 緊急地震速報
 async def Emergency_Earthquake_Report():
     """緊急地震速報を埋め込みメッセージ用に変換"""
     description = '緊急地震速報が発表されました。強い地震に注意してください。'
