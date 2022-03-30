@@ -17,7 +17,7 @@ async def main(res: dict):
     elif code == 552:
         title, description = await tsunami_forecast(res)
     elif code == 554:
-        title, description = await Emergency_Earthquake_Report()
+        title, description = await Emergency_Earthquake_Report(res)
 
     logger.info('title: %s', title)
     logger.info('description: %s', description)
@@ -27,7 +27,7 @@ async def main(res: dict):
             res['earthquake']['time'], '%Y/%m/%d %H:%M:%S').strftime('%Y%m%d%H%M%S'))
         _id = str(res['code'])+'_'+time  # --> ex: 551_202203280000
         return res_emb, _id  # データ, 情報IDを返す
-    return None
+    return None, None
 
 
 async def connect_ws():
@@ -140,7 +140,8 @@ async def earthquake_information(data: dict):
         + '震源:' + name + '\n' \
         + '震源の深さ:' + depth + '\n' \
         + 'マグニチュード:' + str(magnitude) + '\n' \
-        + '各地の地震情報:' + '\n' + await analysis_area(data)
+        + '各地の地震情報:' + '\n' + await analysis_area(data) + '\n\n' \
+        + '気象庁発表時刻:' + datetime.datetime.strptime(data['issue']['time'], '%Y/%m/%d %H:%M:%S')
 
     # 最大震度3以上かつ最大震度-1(不明)の場合は通知する
     if maxscale < 30 and maxscale > 0:
@@ -203,6 +204,8 @@ async def tsunami_forecast(data):
     for grade, immediate, name in area_data:
         description += '種類: ' + await check_warning(grade) + '\n' \
             + '場所: ' + name + '\n'
+
+    description += '\n\n' + '気象庁発表時刻:' + datetime.datetime.strptime(data['issue']['time'], '%Y/%m/%d %H:%M:%S')
     return title, description
 
 
@@ -216,8 +219,9 @@ async def check_warning(data: str):
 
 
 #---------------------------------------------------------- 緊急地震速報
-async def Emergency_Earthquake_Report():
+async def Emergency_Earthquake_Report(data: dict):
     """緊急地震速報を埋め込みメッセージ用に変換"""
-    description = '緊急地震速報が発表されました。強い地震に注意してください。'
+    description = '緊急地震速報が発表されました。強い地震に注意してください。\n\n' \
+        + '気象庁発表時刻:' + datetime.datetime.strptime(data['issue']['time'], '%Y/%m/%d %H:%M:%S')
     title = '緊急地震速報'
     return title, description
