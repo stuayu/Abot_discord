@@ -14,7 +14,7 @@ class Message(commands.Cog):
         self.bot = bot
 
     @commands.Cog.listener()
-    async def on_message(self, message):
+    async def on_message(self, message: discord.Message):
         #channel = self.bot.get_channel('879005759336251412')
         # 自分からのメッセージには返信しないように
         if message.author.bot:
@@ -98,6 +98,12 @@ class Message(commands.Cog):
             else:
                 help_object.add_field(name=description.split('\n',1)[0],value=description.split('\n',1)[1],inline=False)
         await ctx.respond(embed=help_object)
+    
+    @slash_command()
+    async def debug(self, ctx: discord.ApplicationContext):
+        """Abotのログファイルを取得します。"""
+        await ctx.defer()
+        await ctx.respond(file=discord.File("./log/app.log"))
 
 # Bot本体側からコグを読み込む際に呼び出される関数。
 def setup(bot):

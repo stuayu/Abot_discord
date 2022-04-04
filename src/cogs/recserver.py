@@ -12,8 +12,16 @@ from header.logger import *
 class RECSERVER(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.__akita_channel = RECSERVER.load_channel(url=AKITA)
-        self.__fukushima_channel = RECSERVER.load_channel(url=FUKUSHIMA)
+        try:
+            self.__akita_channel = RECSERVER.load_channel(url=AKITA)
+        except:
+            logger.info('秋田サーバーが稼働していないか、設定ファイルが間違っています。')
+            self.__akita_channel = None
+        try:
+            self.__fukushima_channel = RECSERVER.load_channel(url=FUKUSHIMA)
+        except:
+            logger.info('福島サーバーが稼働していないか、設定ファイルが間違っています。')
+            self.__fukushima_channel = None
         #logger.debug('Akita:\n'+str(self.__akita_channel))
         #logger.debug('fukushima:\n'+str(self.__fukushima_channel))
 
@@ -63,8 +71,14 @@ class RECSERVER(commands.Cog):
         #free='True'
         await ctx.defer()
         if region == '秋田':
+            if self.__akita_channel == None:
+                await ctx.respond("サーバに接続することができませんでした。\n管理者にお問い合わせください。")
+                return
             REGION = AKITA
         else:
+            if self.__fukushima_channel == None:
+                await ctx.respond("サーバに接続することができませんでした。\n管理者にお問い合わせください。")
+                return
             REGION = FUKUSHIMA
 
         if channel == 'GR':

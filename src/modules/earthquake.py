@@ -141,7 +141,7 @@ async def earthquake_information(data: dict):
         + '震源の深さ:' + depth + '\n' \
         + 'マグニチュード:' + str(magnitude) + '\n' \
         + '各地の地震情報:' + '\n' + await analysis_area(data) + '\n\n' \
-        + '気象庁発表時刻:' + datetime.datetime.strptime(data['issue']['time'], '%Y/%m/%d %H:%M:%S')
+        + '気象庁発表時刻:' + str(data['issue']['time'])
 
     # 最大震度3以上かつ最大震度-1(不明)の場合は通知する
     if maxscale < 30 and maxscale > 0:

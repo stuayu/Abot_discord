@@ -1,3 +1,4 @@
+import datetime
 import discord
 import traceback  # エラー表示のためにインポート
 from discord.ext import commands
@@ -6,7 +7,7 @@ from modules.earthquake import main, connect_ws, recv_ws
 from header.logger import *
 
 #####################################################
-STATUS_MESSAGE = "Abot v0.9.5"
+STATUS_MESSAGE = "Abot v0.9.6"
 #####################################################
 # 読み込むコグの名前を格納しておく。
 INITIAL_EXTENSIONS = [
@@ -40,7 +41,7 @@ class MyBot(commands.Bot):
                 self.load_extension(cog)
             except Exception:
                 self.error_check = -1
-                traceback.print_exc()
+                logger.error("cog読み込み時にエラー発生", exc_info=True)
 
     # Botの準備完了時に呼び出されるイベント
     async def on_ready(self):
@@ -68,7 +69,7 @@ class MyBot(commands.Bot):
         while True:
             data_ws = await recv_ws(websocket)
             data, _id = await main(data_ws)  # データ, 情報IDを受け取る
-
+            data.set_footer('処理時刻：'+ datetime.datetime.now().strftime('%Y年%m月%d日 %H:%M:%S'))
             if data != None:
                 mes_id = []  # 一時的にメッセージIDを格納するリスト
                 if _id in ID_LOGGER:

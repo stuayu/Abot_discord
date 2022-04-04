@@ -3,6 +3,8 @@ music/*
 cookies.txt
 src/modules/settings.json
 src/modules/text_*.md
+log/*
+!.gitkeep
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

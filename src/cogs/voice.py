@@ -93,7 +93,8 @@ class Voice(commands.Cog):
                         embed.description = _text
                         await send_massage.edit(embed=embed)
                         return
-                    except HTTPException:
+                    except:
+                        logger.error('embed再編集に失敗', exc_info=True)
                         del self.__channel_embed_list[i]
                         embed = discord.Embed(
                             color=discord.Colour.red(), description=_text)
